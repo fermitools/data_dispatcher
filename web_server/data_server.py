@@ -344,6 +344,8 @@ class Handler(BaseHandler):
         project_id = int(project_id)
         project = DBProject.get(db, project_id)
         if not project: return 404, "Project not found"
+        if project.Attributes.get("virtual", False):
+             ready_only = "no"
         handles = project.files(state=state, ready_only=ready_only)
         return json.dumps([h.as_jsonable(with_replicas=ready_only) for h in handles]), "text/json"
 
