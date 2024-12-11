@@ -12,6 +12,15 @@ from .ui_worker import WorkerCLI
 from .ui_rse import RSECLI
 from .ui_lib import pretty_json
 
+# =-=-=-=-=-=-=
+# debugging hack  
+# -- uncomment below to get URL's, etc. printed
+#import http.client
+#import logging
+#http.client.HTTPConnection.debuglevel = 1
+#logging.basicConfig(level=logging.DEBUG)
+
+
 class LoginCommand(CLICommand):
     
     Opts = "t:m:"

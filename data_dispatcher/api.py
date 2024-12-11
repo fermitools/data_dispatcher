@@ -482,26 +482,28 @@ class DataDispatcherClient(HTTPClient, TokenAuthClientMixin):
         available = "yes" if available else "no"
         return self.get(f"set_rse_availability?name={name}&available={available}", none_if_not_found=True)
 
-    def file_done(self, project_id, did):
+    def file_done(self, project_id, did, worker_id=None):
         """Notifies Data Dispatcher that the file was successfully processed and should be marked as "done".
         
         Args:
             project_id (int): project id
             did (str): file DID ("<namespace>:<name>")
         """
+        worker_id = worker_id or self.WorkerID
         handle_id = f"{project_id}:{did}"
-        return self.get(f"release?handle_id={handle_id}&failed=no")
+        return self.get(f"release?handle_id={handle_id}&failed=no&worker_id={worker_id}")
 
-    def file_failed(self, project_id, did, retry=True):
+    def file_failed(self, project_id, did, retry=True, worker_id=None):
         """Notifies Data Dispatcher that the file was successfully processed and should be marked as "done".
         
         Args:
             project_id (int): project id
             did (str): file DID ("<namespace>:<name>")
         """
+        worker_id = worker_id or self.WorkerID
         handle_id = f"{project_id}:{did}"
         retry = "yes" if retry else "no"
-        return self.get(f"release?handle_id={handle_id}&failed=yes&retry={retry}")
+        return self.get(f"release?handle_id={handle_id}&failed=yes&retry={retry}&worker_id={worker_id}")
 
     #
     # Deprecated, undocumented, unsupported
