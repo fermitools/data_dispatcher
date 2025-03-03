@@ -251,7 +251,7 @@ class Handler(BaseHandler):
             project.activate()
         elif project.State != "active":
             return 400, f"Inactive project. State={project.State}"
-        handle, reason, retry = project.reserve_handle(worker_id, virtual=project.attributes.get('virtual', False))
+        handle, reason, retry = project.reserve_handle(worker_id, virtual=project.Attributes.get('virtual', False))
         if handle is None:
             out = {
                 "handle": None,
@@ -260,7 +260,7 @@ class Handler(BaseHandler):
             }
         else:
             pmap = self.App.proximity_map()
-            info = handle.as_jsonable(with_replicas=not self.attributes.get('virtual',False))
+            info = handle.as_jsonable(with_replicas=not project.Attributes.get('virtual',False))
             info["replicas"] = {
                     rse: r for rse, r in info.get("replicas", {}).items()
                     if r["available"] and r["rse_available"]
@@ -279,7 +279,7 @@ class Handler(BaseHandler):
             }
         return json.dumps(out), "text/json"
 
-    def release(self, request, relpath, handle_id=None, failed="no", retry="yes", worker_id='', **args):
+    def release(self, request, relpath, handle_id=None, failed="no", retry="yes", **args):
         if handle_id is None:
             return 400, "File Handle ID (<project_id>:<namespace>:<name>) must be specified"
         user, error = self.authenticated_user()
@@ -296,10 +296,6 @@ class Handler(BaseHandler):
 
         if not user.is_admin() and user.Username != project.Owner:
             return 403, "Not authorized"
-
-        handle = project.handle(namespace, name)
-        if worker_id and handle.WorkerID != worker_id:
-            return 403, "Not authorized: wrong worker_id"
 
         failed = failed == "yes"
         retry = retry == "yes"
