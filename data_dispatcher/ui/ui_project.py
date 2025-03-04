@@ -111,22 +111,26 @@ class CreateCommand(CLICommand):
         roles = [r.strip() for r in opts.get("-r", "").split(',') if r]
 
         worker_timeout = opts.get("-w")
-        if worker_timeout is not None:
+        if worker_timeout is not None and worker_timeout not in ("none", "None"):
             mult = 1
             if worker_timeout[-1].lower() in "smhd":
                 worker_timeout, unit = worker_timeout[:-1], worker_timeout[-1].lower()
                 mult = {'s':1, 'm':60, 'h':3600, 'd':24*3600}[unit]
             worker_timeout = float(worker_timeout)*mult
+        elif worker_timeout in ("none", "None"):
+            worker_timeout = None
         else:
             worker_timeout = 12*3600
 
         idle_timeout = opts.get("-t")
-        if idle_timeout is not None:
+        if idle_timeout is not None and idle_timeout not in ("none", "None"):
             mult = 1
             if idle_timeout[-1].lower() in "smhd":
                 idle_timeout, unit = idle_timeout[:-1], idle_timeout[-1].lower()
                 mult = {'s':1, 'm':60, 'h':3600, 'd':24*3600}[unit]
             idle_timeout = float(idle_timeout)*mult
+        elif idle_timeout in ("none", "None"):
+            idle_timeout = None
         else:
             idle_timeout = 72*3600
 
@@ -367,7 +371,17 @@ class ListCommand(CLICommand):
         attributes = None
         if "-a" in opts:
             attributes = parse_attrs(opts["-a"])
+
         owner = opts.get("-u")
+        if owner is None:
+            # default to current user only
+            owner = owner
+        elif owner == "all":
+            # display projects from all users
+            owner = owner
+        else:
+            # display projects from given user
+            owner = owner
 
         if state == "all":
             states = ["active", "failed", "done", "cancelled", "abandoned"]
