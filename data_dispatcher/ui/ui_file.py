@@ -4,7 +4,7 @@ from .cli import CLI, CLICommand, InvalidOptions, InvalidArguments
 
 class ShowCommand(CLICommand):
     
-    Opts = "j:"
+    Opts = "j"
     Usage = """[-j] <project_id> <file DID>
         -j                  -- JSON output
     """
@@ -33,6 +33,7 @@ class ShowCommand(CLICommand):
                     print("  RSE:        ", r["rse"])
                     print("  Path:       ", r["path"] or "")
                     print("  URL:        ", r["url"] or "")
+                    print("  URLs:       ", r["urls"] or "")
                     print("  Available:  ", "yes" if r["available"] else "no")
 
     def __call__(self, command, client, opts, args):
