@@ -1,3 +1,4 @@
+-- Change experiment_web to the proper web account before running.
 
 -- get in the data_dispatcher schema.
 
@@ -15,3 +16,4 @@ create view replicas_with_rse_availability as
         where rses.name = replicas.rse and rses.is_enabled
 ;
 grant select, insert, update, delete, truncate, references, trigger on replicas_with_rse_availability to dm_admin;
+grant select, insert, update, delete, truncate, references, trigger on replicas_with_rse_availability to experiment_web;

@@ -1,3 +1,5 @@
+-- Change experiment_web to the proper web account before running.
+
 drop table if exists project_log;
 drop table if exists file_handle_log;
 drop table if exists replicas cascade;
@@ -140,3 +142,7 @@ insert into proximity_map(cpu, rse, proximity) values('DEFAULT', 'DEFAULT', 100)
 grant select, insert, update, delete, truncate, references, trigger on all tables in schema data_dispatcher to dm_admin;
 grant select, insert, update, delete, truncate, references, trigger on all views in schema data_dispatcher to dm_admin;
 grant select, update on all sequences in schema data_dispatcher to dm_admin;    
+
+grant select, insert, update, delete, truncate, references, trigger on all tables in schema data_dispatcher to experiment_web;
+grant select, insert, update, delete, truncate, references, trigger on all views in schema data_dispatcher to experiment_web;
+grant select, update on all sequences in schema data_dispatcher to experiment_web;
