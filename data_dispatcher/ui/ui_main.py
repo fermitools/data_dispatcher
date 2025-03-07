@@ -140,7 +140,7 @@ Data Dispatcher version: {Version}
 
 Usage:
 
-dd <commnd> <subcommand> <options> <args>
+ddisp <command> <subcommand> <options> <args>
 
 Commands:
 

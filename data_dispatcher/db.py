@@ -952,18 +952,19 @@ class DBReplica(DBObject, HasLogRecord):
                 records.append((namespace, name, rse, info))
 
         csv = ['%s\t%s\t%s\t%s\t%s' % (namespace, name, rse, 
-                json.dumps(info.get("urls", [])),
+                info.get("urls", [])[0], json.dumps(info.get("urls", [])),
                 'true' if info["available"] else 'false') 
             for namespace, name, rse, info in records
         ]
         csv = io.StringIO("\n".join(csv))
-        
+
         transaction.execute(f"""
             create temp table {temp_table}
             (
                 namespace   text,
                 name        text,
                 rse         text,
+                url         text,
                 urls        jsonb,
                 available   boolean
         )
@@ -983,9 +984,9 @@ class DBReplica(DBObject, HasLogRecord):
         # insert new replicas and update existing ones
         #
         transaction.execute(f"""
-            insert into replicas(namespace, name, rse, urls, available)
+            insert into replicas(namespace, name, rse, url, urls, available)
                 (
-                    select namespace, name, rse, urls, available
+                    select namespace, name, rse, url, urls, available
                         from {temp_table}
                 )
                 on conflict(namespace, name, rse)

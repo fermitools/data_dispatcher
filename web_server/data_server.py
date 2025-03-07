@@ -251,7 +251,7 @@ class Handler(BaseHandler):
             project.activate()
         elif project.State != "active":
             return 400, f"Inactive project. State={project.State}"
-        handle, reason, retry = project.reserve_handle(worker_id, virtual=project.attributes.get('virtual', False))
+        handle, reason, retry = project.reserve_handle(worker_id, virtual=project.Attributes.get('virtual', False))
         if handle is None:
             out = {
                 "handle": None,
@@ -260,7 +260,7 @@ class Handler(BaseHandler):
             }
         else:
             pmap = self.App.proximity_map()
-            info = handle.as_jsonable(with_replicas=not self.attributes.get('virtual',False))
+            info = handle.as_jsonable(with_replicas=not project.Attributes.get('virtual',False))
             info["replicas"] = {
                     rse: r for rse, r in info.get("replicas", {}).items()
                     if r["available"] and r["rse_available"]

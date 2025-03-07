@@ -145,7 +145,7 @@ class ProjectsHandler(BaseHandler):
 
         print("page_index:", index_page_links)
 
-        return self.render_to_response("projects.html", projects=projects, handle_states = DBFileHandle.DerivedStates, message=message,
+        return self.render_to_response("projects.html", projects=projects, handle_states = DBFileHandle.States, message=message,
             page = page, page_index = index_page_links
         )
 
@@ -166,7 +166,7 @@ class ProjectsHandler(BaseHandler):
         project = DBProject.get(db, project_id)
         if project is None:
             return 404, "Project not found"
-        counts = {state:0 for state in DBFileHandle.DerivedStates}
+        counts = {state:0 for state in DBFileHandle.States}
         for did, state in project.handle_states().items():
             counts[state] = counts.get(state, 0) + 1
         return json.dumps(counts), "text/json"
@@ -245,7 +245,7 @@ class ProjectsHandler(BaseHandler):
         npages = (nhandles + page_size - 1)//page_size
             
         available_handles = 0
-        handle_counts_by_state = {state:0 for state in DBFileHandle.DerivedStates}     # {state -> count}
+        handle_counts_by_state = {state:0 for state in DBFileHandle.States}     # {state -> count}
         state_index = {}        # {state -> page number}
         for i, h in enumerate(all_handles):
             replicas = h.replicas()
@@ -285,7 +285,7 @@ class ProjectsHandler(BaseHandler):
         return self.render_to_response("project.html", project=project,
             handles=handles,
             available_handles=available_handles,
-            handle_counts_by_state=handle_counts_by_state, states=DBFileHandle.DerivedStates,
+            handle_counts_by_state=handle_counts_by_state, states=DBFileHandle.States,
             project_log = project.get_log(),
             page = page, 
             page_index = page_index(page, npages, page_size, f"project?project_id={project_id}"), 
