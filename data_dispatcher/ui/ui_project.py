@@ -111,7 +111,7 @@ class CreateCommand(CLICommand):
         roles = [r.strip() for r in opts.get("-r", "").split(',') if r]
 
         worker_timeout = opts.get("-w")
-        if worker_timeout is not None and worker_timeout not in ("none", "None"):
+        if  worker_timeout not in (None, "none", "None"):
             mult = 1
             if worker_timeout[-1].lower() in "smhd":
                 worker_timeout, unit = worker_timeout[:-1], worker_timeout[-1].lower()
@@ -123,7 +123,7 @@ class CreateCommand(CLICommand):
             worker_timeout = 12*3600
 
         idle_timeout = opts.get("-t")
-        if idle_timeout is not None and idle_timeout not in ("none", "None"):
+        if idle_timeout not in (None, "none", "None"):
             mult = 1
             if idle_timeout[-1].lower() in "smhd":
                 idle_timeout, unit = idle_timeout[:-1], idle_timeout[-1].lower()
