@@ -1,4 +1,4 @@
-import sys, time, json
+import sys, time
 from .ui_lib import to_did, from_did, pretty_json
 from .cli import CLI, CLICommand, InvalidOptions, InvalidArguments
 from data_dispatcher.api import NotFoundError
@@ -34,7 +34,7 @@ class NextFileCommand(CLICommand):
             if json_out:
                 reply["replicas"] = sorted(reply["replicas"].values(), key=lambda r: 1000000 if r.get("preference") is None else r["preference"])
                 with open(json_out, "w") as jo:
-                    json.dump(reply, jo, indent=4, sort_keys=True)
+                    json.dump(reply, jo)
         else:
             print("timeout" if reply else "done")
             sys.exit(1)        # timeout
@@ -68,7 +68,7 @@ class FailedCommand(CLICommand):
     def __call__(self, command, client, opts, args):
         project_id, did = args
         if did == "all":
-            dids = [to_did(h["namespace"], h["name"]) for h in client.reserved_handles(project_id)]
+            dids = [to_did(h["namespace"], h["name"]) for h in client.reserved_handles(int(project_id))]
         else:
             dids = [did]
         for did in dids:
@@ -119,7 +119,9 @@ class ListReservedCommand(CLICommand):
             print(pretty_json(handles))
         else:
             for h in handles:
-                print(h["namespace"] + ':' + h["name"])
+                for name, val in h.items():
+                    print(f"{name:10s}: {val}")
+                
 
 
 WorkerCLI = CLI(
