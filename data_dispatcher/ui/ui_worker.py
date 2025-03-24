@@ -18,7 +18,7 @@ class NextFileCommand(CLICommand):
     def __call__(self, command, client, opts, args):
         project_id = int(args[0])
         worker_id = opts.get("-w")
-        json_out = opts.get("-j")
+        json_out = "-j" in opts
         timeout = opts.get("-t")
         if timeout is not None: timeout = int(timeout)
         cpu_site = opts.get("-c")
@@ -41,38 +41,47 @@ class NextFileCommand(CLICommand):
            
 
 class DoneCommand(CLICommand):
-    
+   
+    Opts = "w:"
     MinArgs = 2
-    Usage = """<project id> (<DID>|all)                          -- mark a file as done
+    Usage = """[options] <project id> (<DID>|all)                          -- mark a file as done
+        -w <worker id>      -- specify worker id
         "all" means mark all files reserved by the worker as done
     """
 
     def __call__(self, command, client, opts, args):
         project_id, did = args
+        worker_id = opts.get("-w")
+
         if did == "all":
             dids = [to_did(h["namespace"], h["name"]) for h in client.reserved_handles(project_id)]
         else:
             dids = [did]
+
         for did in dids:
-            client.file_done(int(project_id), did)
+            client.file_done(int(project_id), did, worker_id)
     
 class FailedCommand(CLICommand):
     
-    Opts = "f"
+    Opts = "fw:"
     MinArgs = 2
-    Usage = """[-f] <project id> (<DID>|all)                      -- mark a file as failed
-        -f            -- final, do not retry the file
+    Usage = """[options] <project id> (<DID>|all)                      -- mark a file as failed
+        -f                  -- final, do not retry the file
+        -w <worker id>      -- specify worker id
         "all" means mark all files reserved by the worker as failed
     """
     
     def __call__(self, command, client, opts, args):
         project_id, did = args
+        worker_id = opts.get("-w")
+        retry = not "-f" in opts
+
         if did == "all":
             dids = [to_did(h["namespace"], h["name"]) for h in client.reserved_handles(project_id)]
         else:
             dids = [did]
         for did in dids:
-            client.file_failed(int(project_id), did, retry = not "-f" in opts)
+            client.file_failed(int(project_id), did, retry, worker_id)
 
 class IDCommand(CLICommand):
     
@@ -80,7 +89,7 @@ class IDCommand(CLICommand):
     Usage = """[-n|<worker id>]                                 -- set or print worker id
         -n          -- generate random worker id
         
-        worker id will be saved in <CWD>/.worker_id
+        worker id will be saved in <CWD>/.data_dispatcher_worker_id
     """
     
     def __call__(self, command, client, opts, args):
