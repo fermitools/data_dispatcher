@@ -445,7 +445,7 @@ This command will show information about a file in a project, including the file
 Listing files
 .............
 
-This command will list all the files in a project, their status, attempts, associated workers, and replica information. They are shown to be available if they have an associated RSE.
+This command will list all the files in a project and show some information about them.
 
     .. code-block:: shell
 
@@ -453,6 +453,18 @@ This command will list all the files in a project, their status, attempts, assoc
                   -j                  -- JSON output
                   -s <handle state>   -- list handles in state
                   -r <rse>            -- list handles with replicas in RSE
+
+An example of the output from this command is below. For each file, it shows the state, number of attempts, associated worker, and replica information. For the replicas, it shows the (number of available replicas)/(total replicas). A file is considered to be available if it can be found in the RSE and is prestaged.
+
+    .. code-block:: shell
+
+	  Status Available  Replicas Attempts   Worker File        
+	-------- --------- --------- -------- -------- ------------
+	 initial       yes    1/1           0          example:b.fcl
+	 initial       yes    1/1           0          example:c.fcl
+	 initial       yes    1/1           0          example:d.fcl
+	 initial       yes    1/1           0          example:e.fcl
+	reserved       yes    1/1           1 635c17c6 example:a.fcl
 
 File states
 ...........
@@ -482,7 +494,7 @@ That is why the Data Dispatcher does not maintain the list of worker ids nor doe
 It is the responsibility of the worker to choose a unique worker id, which has some meaning for the user.
 
 The worker can either assign a worker id explicitly, or have the Data Dispatcher client generate a random worker id.
-In both cases, the worker id will be stored in CWD/.worker_id file and will be used to identify the worker in the future interactions with the
+In both cases, the worker id will be stored in CWD/.data_dispatcher_worker_id file and will be used to identify the worker in the future interactions with the
 Data Dispatcher.
 
     .. code-block:: shell
