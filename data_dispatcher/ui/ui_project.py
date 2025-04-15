@@ -268,7 +268,15 @@ class ActivateCommand(CLICommand):
 
     def __call__(self, command, client, opts, args):
         project_id = int(args[0])
+        info = client.get_project(project_id, with_files=True, with_replicas=True)
+        if info is None:
+            print("Project", project_id, "not found")
+            sys.exit(1)
+
         client.activate_project(project_id)
+
+        if "-j" in opts:
+            print(pretty_json(info))
             
 class ShowCommand(CLICommand):
     
@@ -300,21 +308,21 @@ class ShowCommand(CLICommand):
                 for name, value in sorted(attrs.items()):
                     print(f"{name} {value}")
         else:
+            if "-f" in opts:
+                filter_state = opts["-f"]
+                files_filtered = []
+                for h in info["file_handles"]:
+                    if filter_state not in ["all", "initial", "reserved", "failed", "done"]:
+                        print("Invalid file state")
+                        sys.exit(1)
+                    elif h["state"]==filter_state:
+                        files_filtered.append(h)
+                    elif filter_state=="all":
+                        files_filtered.append(h)
+                info["file_handles"] = files_filtered
+
             if "-j" in opts:
                 print(pretty_json(info))
-            elif "-f" in opts:
-                filter_state = opts["-f"]
-                for h in info["file_handles"]:
-                    did = h["namespace"] + ":" + h["name"]
-                    state = h["state"]
-                    rlist = h["replicas"].values()
-                    if filter_state=="all":
-                        print(did)
-                    elif filter_state==state:
-                        print(did)
-                    elif filter_state not in ["all", "initial", "reserved", "failed", "done"]:
-                        print("Invalid state")
-                        break
             else:
                 created_timestamp = datetime.utcfromtimestamp(info["created_timestamp"]).strftime("%Y/%m/%d %H:%M:%S UTC")
                 ended_timestamp = info.get("ended_timestamp") or ""
