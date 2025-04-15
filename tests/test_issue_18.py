@@ -25,7 +25,7 @@ def test_issue_18(proj_id):
     # try to mark it done with a different worker id:
     with os.popen(f"ddisp worker id {wid2}", "r") as fin:
         wid = fin.read().strip()
-    with os.popen(f"ddisp worker done {proj_id} {reserved_file} ", "r") as fin:
+    with os.popen(f"ddisp worker done {proj_id} {reserved_file} 2>&1", "r") as fin:
         out = fin.read()
     assert(out.find("wrong worker_id") >= 0)
 

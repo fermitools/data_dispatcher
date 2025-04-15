@@ -204,16 +204,7 @@ def junk():
 
 def main():
     cli = DDCLI()
-    cli.run(sys.argv, argv0="dd")
+    cli.run(sys.argv, argv0="ddisp")
         
 if __name__ == "__main__":
     main()
-        
-    
-            
-            
-        
-        
-        
-        
-        

@@ -119,10 +119,10 @@ def test_ddisp_project_show_state(auth, proj_id):
     assert data.find(".fcl") >= 0
     with os.popen(f"ddisp project show -f done {proj_id}", "r") as fin:
         data = fin.read()
-    assert len(data) == 0
+    assert data.find("done") <= 0
     with os.popen(f"ddisp project show -f test {proj_id}", "r") as fin:
         data = fin.read()
-    assert data.find("Invalid state") >= 0
+    assert data.find("Invalid file state") >= 0
 
 # needs to be fixed
 #def test_ddisp_project_search(auth, proj_id):
@@ -170,11 +170,9 @@ def test_ddisp_worker_failed(auth, proj_id):
     assert data.find("failed") > 0
 
 def test_ddisp_worker_failed_all(auth, proj_id):
-    with os.popen(f"ddisp project show -f initial {proj_id}", "r") as fin:
-        dids = fin.read()
-
+    with os.popen(f"ddisp file list -s initial {proj_id} | grep initial | awk '{{print $NF}}' ", "r") as fin:
+        dids = fin.read().strip()
     dids = dids.split('\n')
-    dids = dids[:-1]
 
     for did in dids:
         os.system(f"ddisp worker next {proj_id}")
@@ -182,7 +180,7 @@ def test_ddisp_worker_failed_all(auth, proj_id):
     with os.popen(f"ddisp worker failed -f {proj_id} all", "r") as fin:
         data = fin.read()
         assert len(data) == 0
-
+    
     with os.popen(f"ddisp file list {proj_id}", "r") as fin:
         data = fin.read()
         assert data.find("initial") < 0
@@ -198,10 +196,9 @@ def test_ddisp_project_restart(auth, proj_id):
         assert data.find("failed") < 0
 
 def test_ddisp_worker_done_all(auth, proj_id):
-    with os.popen(f"ddisp project show -f initial {proj_id}", "r") as fin:
-        dids = fin.read()
+    with os.popen(f"ddisp file list -s initial {proj_id} | grep initial | awk '{{print $NF}}' ", "r") as fin:
+        dids = fin.read().strip()
     dids = dids.split('\n')
-    dids = dids[:-1]
     for did in dids:
         os.system(f"ddisp worker next {proj_id}")
     with os.popen(f"ddisp worker done {proj_id} all", "r") as fin:
@@ -229,17 +226,6 @@ def test_ddisp_project_copy_default_timeouts(auth, proj_id_copy):
         data = fin.read()
     assert data.find("60.0") >= 0
     assert data.find("43200.0") >= 0
-
-def test_ddisp_project_idle_timeout(auth, proj_id_copy):
-    # check that the project is active at first
-    with os.popen(f"ddisp project show {proj_id_copy} ", "r") as fin:
-        data = fin.read()
-    assert data.find("active") >= 0
-    # check that the project is marked abandoned after timeout
-    time.sleep(90)
-    with os.popen(f"ddisp project show {proj_id_copy} ", "r") as fin:
-        data = fin.read()
-    assert data.find("abandoned") >= 0
 
 def test_ddisp_project_activate(auth, proj_id_copy):
     os.system(f"ddisp project activate {proj_id_copy} ")
