@@ -1,31 +1,29 @@
-Data Dispatcher
-===============
 
-.. image:: https://readthedocs.org/projects/data-dispatcher/badge/?version=latest
-  :target: https://data-dispatcher.readthedocs.io/en/latest/?badge=latest
-  :alt: Documentation Status
+# Data Dispatcher
 
-`Docuemntation <http://data-dispatcher.readthedocs.io/>`_
+File processing coordination service for use with [MetaCat](https://github.com/fermitools/metacat) and [Rucio](https://rucio.cern.ch)
 
-.. code-block:: shell
+* [Documentation](./docs/index.md)
+* [Wiki](./wiki)
 
+```
     # install Data Dispatcher Client
-    $ pip install --user datadispatcher
+    $ pip install --user datadispatcher_client
 
     # set up the environment
     $ export DATA_DISPATCHER_URL=...
     $ export DATA_DISPATCHER_AUTH_URL=...
     $ export METACAT_SERVER_URL=...
+```
     
-.. code-block:: shell
-
-    $ dd
+```
+    $ ddisp
 
     Data Dispatcher version: 1.2.1
 
     Usage:
 
-    dd <commnd> <subcommand> <options> <args>
+    ddisp <commnd> <subcommand> <options> <args>
 
     Commands:
 
@@ -52,7 +50,4 @@ Data Dispatcher
     
         login x509 <user> <cert> <key>
         login password <user>
-
-    
-
-
+```
