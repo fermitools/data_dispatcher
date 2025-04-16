@@ -14,8 +14,8 @@ import os
 import sys
 sys.path.insert(0, os.path.abspath('..'))
 #print(sys.path)
-#import metacat.webapi
-#print(metacat.webapi.__file__)
+import data_dispatcher.api
+print(data_dispatcher.api.__file__)
 
 
 # -- Project information -----------------------------------------------------
