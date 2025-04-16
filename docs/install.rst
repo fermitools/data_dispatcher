@@ -8,7 +8,13 @@ To install the Data Dispatcher client, use pip command:
 
     .. code-block:: shell
     
-        $ pip install --user datadispatcher
+        $ pip install --user datadispatcher_client
+
+or if using Fermi Spack:
+
+    .. code-block:: shell
+    
+       $spack install data-dispatcher
 
 Alternatively:
 
