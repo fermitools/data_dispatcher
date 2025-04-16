@@ -61,7 +61,7 @@ def print_handles(handles, print_replicas):
             file_available,
             "%4d/%-4d" % (available_replicas, nreplicas),
             f["attempts"],
-            f["worker_id"],
+            f["worker_id"] if f["worker_id"] else "-",
             "%s:%s" % (f["namespace"], f["name"])
         )
         if print_replicas:
