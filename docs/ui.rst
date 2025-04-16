@@ -124,6 +124,8 @@ Optionally, use ``-t <timeout in seconds>`` to specify the worker timeout. If a 
 for longer than the specified time interval, Data Dispatcher will automatically release the file and make it available for
 another worker to allocate. Make sure the specified interval is long enough to avoid processing of the same file by multiple
 workers.
+There is a Data Dispatcher daemon running that checks these timeouts approx. every 2 seconds. 
+
 
 The "ddisp project create" command prints information about the created project in 3 different formats, depending on 
 the value of the ``-p`` option:
