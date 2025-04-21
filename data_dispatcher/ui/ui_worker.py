@@ -36,7 +36,11 @@ class NextFileCommand(CLICommand):
                 with open(json_out, "w") as jo:
                     json.dump(reply, jo, indent=4, sort_keys=True)
         else:
-            print("timeout" if reply else "done")
+            resp = "timeout" if reply else "done"
+            if json_out:
+                print('{"state": "%s"}' % resp)
+            else:
+                print(resp)
             sys.exit(1)        # timeout
            
 
