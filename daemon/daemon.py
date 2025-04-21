@@ -465,7 +465,7 @@ class ProjectMaster(PyThread, Logged):
         if not project_id in self.Monitors:
             # check if new project
             project = DBProject.get(self.DB, project_id)
-            if project is not None:
+            if project is not None and not project.Attributes.get("virtual",False):
                 monitor = ProjectMonitor(self, project_id, self.DB, 
                         self.RSEConfig, self.RucioClient, self.URLSchemes)
                 self.Monitors[project_id] = monitor
