@@ -1495,9 +1495,11 @@ class DBFileHandle(DBObject, HasLogRecord):
     def release_reserved_before(db, project_id, reserved_before, transaction=None):
         if reserved_before is None:
             return 0
+
         transaction.execute("""
             update file_handles h_new
-                set state = %s, worker_id = null
+                set state = %s, worker_id = null,
+		attributes = jsonb_set(h_old.attributes, '{timeouts}', to_jsonb(CASE when h_old.attributes->'timeouts' is NULL THEN 0 ELSE CAST(h_old.attributes->'timeouts' as integer)  END + 1))
                 from file_handles h_old                     -- this is the trick to get the worker_id before it is updated to null
                 where h_new.project_id = %s and h_new.state = %s and h_new.reserved_since < %s
                     and h_new.project_id = h_old.project_id and h_new.namespace = h_old.namespace and h_new.name = h_old.name
