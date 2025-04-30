@@ -1496,6 +1496,14 @@ class DBFileHandle(DBObject, HasLogRecord):
         if reserved_before is None:
             return 0
 
+	project = DBProject.get(db, project_id)
+	p_attrs = project.Attributes
+	retry = p_attrs.get("retry_on_timeout", 'True')
+	if retry == 'True':
+	    new_state = "initial"
+	else:
+	    new_state = "failed"
+
         transaction.execute("""
             update file_handles h_new
                 set state = %s, worker_id = null,
@@ -1504,12 +1512,12 @@ class DBFileHandle(DBObject, HasLogRecord):
                 where h_new.project_id = %s and h_new.state = %s and h_new.reserved_since < %s
                     and h_new.project_id = h_old.project_id and h_new.namespace = h_old.namespace and h_new.name = h_old.name
                 returning h_new.namespace, h_new.name, h_old.worker_id
-        """, (DBFileHandle.ReadyState, project_id, DBFileHandle.ReservedState, reserved_before))
+        """, (new_state, project_id, DBFileHandle.ReservedState, reserved_before))
         log_records = [
             (
                 (project_id, namespace, name),
                 "state",
-                dict(event = "worker_timeout", state=DBFileHandle.ReadyState, worker=worker_id)
+                dict(event = "worker_timeout", state=new_state, worker=worker_id)
             ) for namespace, name, worker_id in transaction.fetchall()
         ]
         DBFileHandle.add_log_bulk(db, log_records, transaction=transaction)

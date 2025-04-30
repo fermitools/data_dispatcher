@@ -52,7 +52,7 @@ def print_handles(handles, print_replicas):
         available_replicas = 0 if rlist is None else len([r for r in rlist.values() if r["available"] and r["rse_available"]])
         nreplicas = 0 if rlist is None else len(rlist)
         state = f["state"]
-        timeouts = f.get('attributes')["timeouts"]
+        timeouts = f.get('attributes', {}).get("timeouts", 0)
         if available_replicas > 0:
             file_available = "yes"
         else:
