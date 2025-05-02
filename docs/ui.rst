@@ -283,6 +283,14 @@ When the worker gets next file to process, the JSON representation of file infor
           "worker_id": "fnpc123_pid4563"
         }
 
+Special project attributes
+..........................
+There are a couple of special project attributes that cause different behavior in data dispatcher.
+
+Setting *virtual=True* will prevent data dispatcher from looking for the files in rucio. The default is False.
+
+Setting *retry_on_timeout=False* will cause the project's files that timed out to go to the failed state instead of back to the initial state. The default is True.
+
 Project ownership and use authorization
 .......................................
 
@@ -456,17 +464,17 @@ This command will list all the files in a project and show some information abou
                   -s <handle state>   -- list handles in state
                   -r <rse>            -- list handles with replicas in RSE
 
-An example of the output from this command is below. For each file, it shows the state, number of attempts, associated worker, and replica information. For the replicas, it shows the (number of available replicas)/(total replicas). A file is considered to be available if it can be found in the RSE and is prestaged.
+An example of the output from this command is below. For each file, it shows the state, number of attempts, number of times it timed out, the associated worker, and replica information. For the replicas, it shows the (number of available replicas)/(total replicas). A file is considered to be available if it can be found in the RSE and is prestaged.
 
     .. code-block:: shell
 
-	  Status Available  Replicas Attempts   Worker File        
-	-------- --------- --------- -------- -------- ------------
-	 initial       yes    1/1           0          example:b.fcl
-	 initial       yes    1/1           0          example:c.fcl
-	 initial       yes    1/1           0          example:d.fcl
-	 initial       yes    1/1           0          example:e.fcl
-	reserved       yes    1/1           1 635c17c6 example:a.fcl
+	  Status Available  Replicas Attempts Timeouts Worker    File        
+	-------- --------- --------- -------- -------- -------- ------------
+	 initial       yes    1/1           0        0          example:b.fcl
+	 initial       yes    1/1           0        0          example:c.fcl
+	 initial       yes    1/1           0        0          example:d.fcl
+	 initial       yes    1/1           1        1          example:e.fcl
+	reserved       yes    1/1           1        0 635c17c6 example:a.fcl
 
 File states
 ...........
