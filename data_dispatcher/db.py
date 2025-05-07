@@ -1496,18 +1496,18 @@ class DBFileHandle(DBObject, HasLogRecord):
         if reserved_before is None:
             return 0
 
-	project = DBProject.get(db, project_id)
-	p_attrs = project.Attributes
-	retry = p_attrs.get("retry_on_timeout", 'True')
-	if retry == 'True':
-	    new_state = "initial"
-	else:
-	    new_state = "failed"
+        project = DBProject.get(db, project_id)
+        p_attrs = project.Attributes
+        retry = p_attrs.get("retry_on_timeout", 'True')
+        if retry == 'True':
+            new_state = "initial"
+        else:
+            new_state = "failed"
 
         transaction.execute("""
             update file_handles h_new
                 set state = %s, worker_id = null,
-		attributes = jsonb_set(h_old.attributes, '{timeouts}', to_jsonb(CASE when h_old.attributes->'timeouts' is NULL THEN 0 ELSE CAST(h_old.attributes->'timeouts' as integer)  END + 1))
+                attributes = jsonb_set(h_old.attributes, '{timeouts}', to_jsonb(CASE when h_old.attributes->'timeouts' is NULL THEN 0 ELSE CAST(h_old.attributes->'timeouts' as integer)  END + 1))
                 from file_handles h_old                     -- this is the trick to get the worker_id before it is updated to null
                 where h_new.project_id = %s and h_new.state = %s and h_new.reserved_since < %s
                     and h_new.project_id = h_old.project_id and h_new.namespace = h_old.namespace and h_new.name = h_old.name
