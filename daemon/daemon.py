@@ -234,6 +234,14 @@ class ProjectMonitor(Primitive, Logged):
         self.ProjectID = project_id
         self.DB = db
         self.RSEConfig = rse_config
+
+        if url_schemes:
+            url_schemes = [scheme.lower() for scheme in url_schemes]
+        self.URLSchemes = url_schemes or None
+        self.SchemesPreference = {scheme: i         # used for sorting
+            for i, scheme in enumerate(url_schemes or [])
+        }
+
         self.PinRequests = {}       # {rse -> PinRequest}
         self.Master = master
         self.RucioClient = rucio_client
@@ -245,11 +253,6 @@ class ProjectMonitor(Primitive, Logged):
         self.SyncTask = SyncTaskQueue.add(self.sync_replicas, interval=self.SyncInterval)
         self.CheckProjectTask = GeneralTaskQueue.add(self.check_project_state, interval=self.UpdateInterval)
         self.UpdateAvailabilityTask = None
-        url_schemes = [scheme.lower() for scheme in url_schemes]
-        self.URLSchemes = url_schemes or None
-        self.SchemesPreference = {scheme: i         # used for sorting
-            for i, scheme in enumerate(url_schemes or [])
-        }
 
     def tape_rse_interface(self, rse):
         interface = self.TapeRSEInterfaces.get(rse)

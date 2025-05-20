@@ -951,7 +951,7 @@ class DBReplica(DBObject, HasLogRecord):
             for rse, info in by_rse.items():
                 records.append((namespace, name, rse, info))
 
-        csv = ['%s\t%s\t%s\t%s\t%s' % (namespace, name, rse, 
+        csv = ['%s\t%s\t%s\t%s\t%s\t%s' % (namespace, name, rse, 
                 info.get("urls", [])[0], json.dumps(info.get("urls", [])),
                 'true' if info["available"] else 'false') 
             for namespace, name, rse, info in records
