@@ -227,13 +227,14 @@ class ProjectMonitor(Primitive, Logged):
     NewRequestInterval = 5      # interval to check on new pin request
     SyncInterval = 600          # interval to re-sync replicas with Rucio
     
-    def __init__(self, master, project_id, db, rse_config, rucio_client, url_schemes=None):
+    def __init__(self, master, project_id, db, rse_config, rucio_client, url_schemes=None, virtual=False):
         Logged.__init__(self, f"ProjectMonitor({project_id})")
         Primitive.__init__(self, name=f"ProjectMonitor({project_id})")
         self.Removed = False
         self.ProjectID = project_id
         self.DB = db
         self.RSEConfig = rse_config
+        self.Virtual = virtual
 
         if url_schemes:
             url_schemes = [scheme.lower() for scheme in url_schemes]
@@ -311,7 +312,7 @@ class ProjectMonitor(Primitive, Logged):
     @synchronized
     def sync_replicas(self):
         if self.Removed:
-            self.debug("sync_replicas: already removed. skipping")
+            self.debug(f"sync_replicas: project {self.ProjectID} already removed. skipping")
             return              # alredy removed
         active_handles = self.active_handles()
         self.debug("sync_replicas(): active_handles:", None if active_handles is None else len(active_handles))
@@ -322,6 +323,10 @@ class ProjectMonitor(Primitive, Logged):
         elif not active_handles:
             self.remove_me("done")
             return "stop"
+
+        if self.Virtual:
+            self.debug(f"sync_replicas: project {self.ProjectID} is virtual. skipping Rucio checks.")
+            return
             
         try:
             dids = [{"scope":h.Namespace, "name":h.Name} for h in active_handles]
@@ -397,8 +402,13 @@ class ProjectMonitor(Primitive, Logged):
             # Collect replica info on active replicas located in tape storages
             #
 
-            tape_replicas_by_rse = self.tape_replicas_by_rse(active_handles)               # {rse -> {did -> replica}}
-            self.debug("tape_replicas_by_rse:", [(rse, len(dids)) for rse, dids in tape_replicas_by_rse.items()])
+            if self.Virtual:
+                # don't worry about tape replicas
+                tape_replicas_by_rse = {}
+                self.debug(f"itape_replicas_by_rse: project {self.ProjectID} is virtual. skipping tape bits")
+            else:
+                tape_replicas_by_rse = self.tape_replicas_by_rse(active_handles)               # {rse -> {did -> replica}}
+                self.debug("tape_replicas_by_rse:", [(rse, len(dids)) for rse, dids in tape_replicas_by_rse.items()])
         
             next_run = self.UpdateInterval
 
@@ -468,10 +478,11 @@ class ProjectMaster(PyThread, Logged):
         if not project_id in self.Monitors:
             # check if new project
             project = DBProject.get(self.DB, project_id)
-            if project is not None and not project.Attributes.get("virtual",False):
-                monitor = ProjectMonitor(self, project_id, self.DB, 
-                        self.RSEConfig, self.RucioClient, self.URLSchemes)
-                self.Monitors[project_id] = monitor
+            virtual = project.Attributes.get("virtual",False)
+            self.debug(f"add_project: project_id: {project_id} virtual flag {repr(virtual)}")
+            monitor = ProjectMonitor(self, project_id, self.DB, 
+                    self.RSEConfig, self.RucioClient, self.URLSchemes, virtual)
+            self.Monitors[project_id] = monitor
             self.log("project added:", project_id)
 
     @synchronized
