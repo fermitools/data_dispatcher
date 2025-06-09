@@ -349,6 +349,8 @@ class Handler(BaseHandler):
         project_id = int(project_id)
         project = DBProject.get(db, project_id)
         if not project: return 404, "Project not found"
+        if project.Attributes.get("virtual", False):
+             ready_only = "no"
         handles = project.files(state=state, ready_only=ready_only)
         return json.dumps([h.as_jsonable(with_replicas=ready_only) for h in handles]), "text/json"
 
@@ -392,6 +394,7 @@ class Handler(BaseHandler):
         attributes = json.loads(attributes) if attributes else None
         db = self.App.db()
         projects = DBProject.list(db, state=state, not_state=not_state, owner=owner, attributes=attributes)
+        projects = sorted(projects, key=lambda p: p.ID)
         return json.dumps([p.as_jsonable(with_handles=with_handles, with_replicas=with_replicas) for p in projects]), "text/json"
 
     def search_projects(self, request, relpath, **args):

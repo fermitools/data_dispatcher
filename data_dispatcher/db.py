@@ -951,7 +951,7 @@ class DBReplica(DBObject, HasLogRecord):
             for rse, info in by_rse.items():
                 records.append((namespace, name, rse, info))
 
-        csv = ['%s\t%s\t%s\t%s\t%s' % (namespace, name, rse, 
+        csv = ['%s\t%s\t%s\t%s\t%s\t%s' % (namespace, name, rse, 
                 info.get("urls", [])[0], json.dumps(info.get("urls", [])),
                 'true' if info["available"] else 'false') 
             for namespace, name, rse, info in records
@@ -1495,19 +1495,29 @@ class DBFileHandle(DBObject, HasLogRecord):
     def release_reserved_before(db, project_id, reserved_before, transaction=None):
         if reserved_before is None:
             return 0
+
+        project = DBProject.get(db, project_id)
+        p_attrs = project.Attributes
+        retry = p_attrs.get("retry_on_timeout", 'True')
+        if retry == 'True':
+            new_state = "initial"
+        else:
+            new_state = "failed"
+
         transaction.execute("""
             update file_handles h_new
-                set state = %s, worker_id = null
+                set state = %s, worker_id = null,
+                attributes = jsonb_set(h_old.attributes, '{timeouts}', to_jsonb(CASE when h_old.attributes->'timeouts' is NULL THEN 0 ELSE CAST(h_old.attributes->'timeouts' as integer)  END + 1))
                 from file_handles h_old                     -- this is the trick to get the worker_id before it is updated to null
                 where h_new.project_id = %s and h_new.state = %s and h_new.reserved_since < %s
                     and h_new.project_id = h_old.project_id and h_new.namespace = h_old.namespace and h_new.name = h_old.name
                 returning h_new.namespace, h_new.name, h_old.worker_id
-        """, (DBFileHandle.ReadyState, project_id, DBFileHandle.ReservedState, reserved_before))
+        """, (new_state, project_id, DBFileHandle.ReservedState, reserved_before))
         log_records = [
             (
                 (project_id, namespace, name),
                 "state",
-                dict(event = "worker_timeout", state=DBFileHandle.ReadyState, worker=worker_id)
+                dict(event = "worker_timeout", state=new_state, worker=worker_id)
             ) for namespace, name, worker_id in transaction.fetchall()
         ]
         DBFileHandle.add_log_bulk(db, log_records, transaction=transaction)

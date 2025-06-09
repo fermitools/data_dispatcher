@@ -1,5 +1,6 @@
 import requests, uuid, json, urllib.parse, os, time, random
 from metacat.common import TokenLib, HTTPClient, TokenAuthClientMixin
+from metacat.common.exceptions import WebAPIError
 
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -387,7 +388,14 @@ class DataDispatcherClient(HTTPClient, TokenAuthClientMixin):
         url_tail = f"next_file?project_id={project_id}&worker_id={worker_id}"
         if cpu_site:
             url_tail += f"&cpu_site={cpu_site}"
-        return self.get(url_tail)
+        try:
+            res = self.get(url_tail)
+        except WebAPIError as e:
+            if repr(e).find("State=done"):
+                return {"retry": False}
+            else:
+                raise
+        return res
 
     def next_file(self, project_id, cpu_site=None, worker_id=None, timeout=None, stagger=10):
         """Reserves next available file from the project
