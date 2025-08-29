@@ -440,8 +440,91 @@ class Handler(BaseHandler):
         lst = DBFileHandle.list(db, project_id=project_id, not_state=not_state, state=state, with_replicas=with_replicas=="yes")
         return json.dumps([h.as_jsonable() for h in lst]), "text/json"
 
+    def create_rse(self, request, relpath, **args):
+        user, error = self.authenticated_user()
+        if user is None:
+            return 401, error
+        if not user.is_admin():
+            return 403, "Not authorized"
+
+        db = self.App.db()
+
+        specs = json.loads(to_str(request.body))
+        name = specs.get("name")
+
+        if DBRSE.get(db, name) is not None:
+            return 409, "Already exists"
+
+        description = specs.get("description")
+        is_enabled = specs.get("is_enabled")
+        is_available = specs.get("is_available")
+        is_tape = specs.get("is_tape")
+        pin_url = specs.get("pin_url")
+        poll_url = specs.get("poll_url")
+        remove_prefix = specs.get("remove_prefix")
+        add_prefix = specs.get("add_prefix")
+        pin_prefix = specs.get("pin_prefix")
+
+        preference = specs.get("preference")
+        if preference != None:
+            preference = int(preference)
+
+        interface = specs.get("interface")
+        if interface != "native" and interface != "wlcg":
+            interface = None
+
+        #return 401, f"{specs}"
+
+        rse = DBRSE.create(db, name, description, is_enabled, is_available, is_tape, pin_url, poll_url, remove_prefix, add_prefix, pin_prefix, preference, interface)
+        return json.dumps(rse.as_jsonable()), "text/json"
+
+    def update_rse(self, request, replath, name=None, **args):
+        user, error = self.authenticated_user()
+        if user is None:
+            return 401, error
+        if not user.is_admin():
+            return 403, "Not authorized"
+
+        updates = json.loads(to_str(request.body))
+        name = updates.get("Name")
+        rse = DBRSE.get(self.App.db(), name)
+        if rse is None:
+            return 404, f"RSE {name} not found"
+
+        updates.pop("Name")
+        for k in list(updates):
+            if updates[k] is None:
+                del updates[k]
+
+        for k,v in updates.items():
+            if hasattr(rse, k):
+                setattr(rse, k, v)
+            else:
+                return 400, f"Bad key: {k}"
+
+        rse.save()
+        return json.dumps(rse.as_jsonable()), "text/json"
+
+    def delete_rse(self, request, relpath, name=None, **args):
+        if not name:
+            return 400, "RSE name must be specified"
+        user, error = self.authenticated_user()
+        if user is None:
+            return 401, error
+
+        db = self.App.db()
+        rse = DBRSE.get(db, name)
+
+        if rse is None:
+            return 404, "RSE not found"
+        if not user.is_admin():
+            return 403, "Not authorized"
+
+        rse.delete()
+        return "null", "text/json"
+
     def rses(self, request, relpath, **args):
-        rses = DBRSE.list(self.App.db())
+        rses = DBRSE.list(self.App.db(), include_disabled=True)
         return json.dumps([r.as_jsonable() for r in rses]), "text/json"
 
     def get_rse(self, request, relpath, name=None, **args):
@@ -456,7 +539,7 @@ class Handler(BaseHandler):
         if user is None:
             return 401, error
         if not user.is_admin():
-            return "Not authorized", 403
+            return 403, "Not authorized"
 
         if available not in ("yes", "no"):
             return 400, 'availability value must be specified as "yes" or "no"'

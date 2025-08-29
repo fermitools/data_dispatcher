@@ -477,18 +477,107 @@ class DataDispatcherClient(HTTPClient, TokenAuthClientMixin):
         return self.get(f"get_rse?name={name}", none_if_not_found=True)
 
     def set_rse_availability(self, name, available):
-        """Changes RSE availability flag. The user must be an admin.
-
-        Args:
-            name (str): RSE name
-            available (boolean): RSE availability
-
-        Returns:
-            dictionary with updated RSE information or None if not found
+        """"
+        Deprecated. Please use update_rse instead.
         """
 
-        available = "yes" if available else "no"
-        return self.get(f"set_rse_availability?name={name}&available={available}", none_if_not_found=True)
+#        """Changes RSE availability flag. The user must be an admin.
+
+#        Args:
+#            name (str): RSE name
+#            available (boolean): RSE availability
+
+#        Returns:
+#            dictionary with updated RSE information or None if not found
+#        """
+
+#        available = "yes" if available else "no"
+#        return self.get(f"set_rse_availability?name={name}&available={available}", none_if_not_found=True)
+
+    def create_rse(self, name, description, is_enabled=True, is_available=True, is_tape=False, pin_url=None, poll_url=None, remove_prefix=None, add_prefix=None, pin_prefix=None, preference=None, interface=None):
+        """Creates new RSE
+
+        Parameters
+        ----------
+        name (string): Name of RSE to be created
+        description (string): Description of new RSE (optional)
+        is_enabled (boolean): Whether the RSE is enabled
+        is_available (boolean): Whether the RSE is available
+        is_tape (boolean): Whether the RSE is tape or not
+        pin_url (string): Pin URL for native, discovery URL for WLCG
+        poll_url (string): Poll URL for native, not used for WLCG
+        remove_prefix (string): Prefix to remove for URL to path conversion (optional)
+        add_prefix (string): Prefix to add for URL to path conversion (optional)
+        pin_prefix (string): Pin prefix (optional)
+        preference (integer): Preference of RSE
+        interface (string): Either native or WLCG
+
+        Returns
+        -------
+        dict : new RSE information
+        """
+
+        return self.post("create_rse", json.dumps(
+            {
+                "name":           name,
+                "description":    description,
+                "is_enabled":     is_enabled,
+                "is_available":   is_available,
+                "is_tape":        is_tape,
+                "pin_url":        pin_url,
+                "poll_url":       poll_url,
+                "remove_prefix":  remove_prefix,
+                "add_prefix":     add_prefix,
+                "pin_prefix":     pin_prefix,
+                "preference":     preference,
+                "interface":      interface
+            }
+          )
+        )
+
+    def update_rse(self, name, description, is_enabled=None, is_available=None, is_tape=None, pin_url=None, poll_url=None, remove_prefix=None, add_prefix=None, pin_prefix=None, preference=None, interface=None):
+        """Update RSE settings. User must be an admin.
+
+        Parameters
+        ----------
+        name (string): Name of RSE to be created
+        description (string): Description of new RSE (optional)
+        is_enabled (boolean): Whether the RSE is enabled
+        is_available (boolean): Whether the RSE is available
+        is_tape (boolean): Whether the RSE is tape or not
+        pin_url (string): Pin URL for native, discovery URL for WLCG
+        poll_url (string): Poll URL for native, not used for WLCG
+        remove_prefix (string): Prefix to remove for URL to path conversion (optional)
+        add_prefix (string): Prefix to add for URL to path conversion (optional)
+        pin_prefix (string): Pin prefix (optional)
+        preference (integer): Preference of RSE
+        interface (string): Either native or WLCG
+
+        Returns
+        -------
+        dict : updated RSE information
+        """
+
+        return self.post("update_rse", json.dumps(
+            {
+                "Name":           name,
+                "Description":    description,
+                "Enabled":     is_enabled,
+                "Available":   is_available,
+                "Tape":        is_tape,
+                "PinURL":        pin_url,
+                "PollURL":       poll_url,
+                "RemovePrefix":  remove_prefix,
+                "AddPrefix":     add_prefix,
+                "PinPrefix":     pin_prefix,
+                "Preference":     preference,
+                "Type":      interface
+            }
+          )
+        )
+
+    def delete_rse(self, name):
+        return self.get(f"delete_rse?name={name}")
 
     def file_done(self, project_id, did, worker_id=None):
         """Notifies Data Dispatcher that the file was successfully processed and should be marked as "done".
