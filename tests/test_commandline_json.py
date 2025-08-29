@@ -159,4 +159,18 @@ def test_ddisp_rse_show_json(auth):
     assert data.find("name") >= 0
     assert data.find("is_available") >= 0
 
+def test_ddisp_rse_create_json(auth):
+    with os.popen("ddisp rse create -a True -d 'fake rse for testing' -o 2 -j TESTING", "r") as fin:
+        data = fin.read()
+    assert json.loads(data)
+    assert data.find("TESTING") >= 0
+    assert data.find("is_available") >= 0
+
+def test_ddisp_rse_update_json(auth):
+    with os.popen(f"ddisp rse update -m testprefix -j TESTING", "r") as fin:
+        data = fin.read()
+    assert json.loads(data)
+    assert data.find("testprefix") >= 0
+    os.system("ddisp rse delete TESTING")
+
 

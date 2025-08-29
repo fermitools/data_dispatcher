@@ -233,7 +233,6 @@ def test_ddisp_project_activate(auth, proj_id_copy):
         data = fin.read()
     assert data.find("active") >= 0
 
-
 def test_ddisp_project_cancel(auth, proj_id_copy):
     os.system(f"ddisp project cancel {proj_id_copy} ")
     with os.popen(f"ddisp project show {proj_id_copy} ", "r") as fin:
@@ -253,8 +252,22 @@ def test_ddisp_rse_list(auth):
     assert data.find("Status") >= 0
     assert data.find("Description") >= 0
 
-#def test_ddisp_rse_set():
+def test_ddisp_rse_create(auth):
+    with os.popen(f"ddisp rse create -a True -d 'fake rse for testing' -o 2 TESTING", "r") as fin:
+        data = fin.read()
+    assert data.find("TESTING") >= 0
+    assert data.find("Available") >= 0
 
+def test_ddisp_rse_update(auth):
+    with os.popen(f"ddisp rse update -m testprefix TESTING", "r") as fin:
+        data = fin.read()
+    assert data.find("testprefix") >= 0
+
+def test_ddisp_rse_delete(auth):
+    os.system(f"ddisp rse delete TESTING")
+    with os.popen("ddisp rse list", "r") as fin:
+        data = fin.read()
+    assert data.find("TESTING") < 0
 
 def test_ddisp_rse_show(auth):
     with os.popen("ddisp rse show FNAL_DCACHE_DISK_TEST", "r") as fin:
