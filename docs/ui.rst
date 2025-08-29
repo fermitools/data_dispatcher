@@ -674,14 +674,14 @@ Listing known RSEs
         ]
         
         $ ddisp rse list
-        Name                                     Pref Tape Status Description
-        --------------------------------------------------------------------------------------------------------------
-        FNAL_DCACHE                                 0 tape     up FNAL dCache
-        FNAL_DCACHE_PERSISTENT                      0 tape     up 
-        FNAL_DCACHE_STAGING                         0 tape     up 
-        FNAL_DCACHE_TEST                            0 tape     up 
-        LANCASTER                                   0          up 
-        TEST_RSE                                    0          up Test RSE
+        Name                           Tape Status Enabled Description                                                 
+        ------------------------------ ---- ------ ------- ------------------------------------------------------------
+        FNAL_DCACHE                    tape     up     yes FNAL dCache
+        FNAL_DCACHE_PERSISTENT         tape     up     yes 
+        FNAL_DCACHE_STAGING            tape     up     yes  
+        FNAL_DCACHE_TEST               tape     up     yes  
+        LANCASTER                               up     yes  
+        TEST_RSE                                up     yes Test RSE
         --------------------------------------------------------------------------------------------------------------
         
         
@@ -713,15 +713,40 @@ Showing information about particular RSE
           "remove_prefix": ""
         }
 
-Changing RSE availability
-.........................
+Creating an RSE
+...............
 
-This command requires admin privileges.
+Add a new RSE in data dispatcher. This command requires admin privileges.
 
     .. code-block:: shell
 
-        $ ddisp rse set -a down FNAL_DCACHE
-        $ ddisp rse show FNAL_DCACHE
+        $ ddisp rse create [options] <rse_name>          -- create RSE
+  
+          -e (True|False)                           -- the RSE should be enabled
+          -d <description>                          -- description of RSE
+          -t (True|False)                           -- the RSE is tape
+          -a (True|False)                           -- the RSE should be available
+          -o <preference>                           -- preference of RSE (integer)
+  
+          -m <prefix>                               -- add prefix
+          -l <prefix>                               -- remove prefix
+  
+          For dCache RSEs only:
+          -i (wlcg|native)                          -- interface
+          -u <url>                                  -- pin/discovery url
+          -p <prefix>                               -- pin prefix
+          -f <url>                                  -- poll url (only for native, not used for wlcg)
+  
+          -j                                        -- json output
+
+Changing RSE attributes
+.......................
+
+Update any of the parameters of an RSE. This command requires admin privileges. To update the availability:
+
+    .. code-block:: shell
+
+        $ ddisp rse update -a False FNAL_DCACHE
         RSE:            FNAL_DCACHE
         Preference:     0
         Tape:           yes
@@ -729,5 +754,14 @@ This command requires admin privileges.
         ...
         
 When an RSE is unavailable (down), replicas in this RSE are considered unavailable even if this is a disk RSE or they are known to be staged in a tape RSE.
+
+Deleting an RSE
+...............
+
+Remove an RSE from data dispatcher. This command requires admin privileges.
+
+    .. code-block:: shell
+
+        $ ddisp rse delete <rse_name>                    -- remove RSE
 
 
