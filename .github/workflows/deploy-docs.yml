@@ -20,6 +20,8 @@ jobs:
           python -m pip install --upgrade pip
           pip install sphinx
           pip install -e .
+      - name: Clean old docs
+        run: rm -rf docs/_build
       - name: Build Sphinx documentation
         run: |
           cd docs
