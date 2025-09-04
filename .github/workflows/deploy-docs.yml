@@ -1,5 +1,3 @@
-# This is a basic workflow to help you get started with Actions
-
 name: documentation
 
 on:
@@ -19,9 +17,10 @@ jobs:
           python-version: 3.13
       - name: Install dependencies
         run: |
-          pip install -r requirements.txt
+          python -m pip install --upgrade pip
           pip install sphinx
-      - name: Build Sphix documentation
+          pip install -e .
+      - name: Build Sphinx documentation
         run: |
           cd docs
           make html
