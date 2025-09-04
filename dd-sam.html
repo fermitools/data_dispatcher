@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>DD-SAM &#8212; Data Dispatcher  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="_static/nature.css?v=279e0f84" />
+    <script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Searching Projects by Metadata" href="project_query.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="project_query.html" title="Searching Projects by Metadata"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Data Dispatcher  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">DD-SAM</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="dd-sam">
+<h1>DD-SAM<a class="headerlink" href="#dd-sam" title="Link to this heading">¶</a></h1>
+<p><code class="docutils literal notranslate"><span class="pre">dd-sam</span></code> is a collecton of command line tools implementing portions of SAM functionality, which require communication with more than one of
+the 3 components - Data Dispatcher, MetaCat and Rucio. Strictly speaking, Data Dispatcher interface already communicates with MetaCat and
+Data Dispatcher server when it is creating a project from the result of a MetaCat query.</p>
+<section id="dd-sam-configuration">
+<h2>DD-SAM configuration<a class="headerlink" href="#dd-sam-configuration" title="Link to this heading">¶</a></h2>
+<p>Because <code class="docutils literal notranslate"><span class="pre">dd-sam</span></code> uses Rucio, MetaCat and Data Dispatcher clients, all 3 of them need to be configured properly. The following
+environment variables can be used for that:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>METACAT_SERVER_URL - MetaCat server URL</p></li>
+<li><p>DATA_DISPATCHER_URL - DataDisatcher server URL</p></li>
+<li><p>RUCIO_CONFIG - file with Rucio client configuration</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="replica-locations">
+<h2>Replica locations<a class="headerlink" href="#replica-locations" title="Link to this heading">¶</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">dd-sam</span> <span class="pre">locations</span></code> command can be used to get real-time information about file replica locations.</p>
+<p>Getting locations for files selected by a MetaCat query:</p>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>dd-sam<span class="w"> </span>locations<span class="w"> </span><span class="o">[</span>options<span class="o">]</span><span class="w"> </span>-q<span class="p">|</span>--query<span class="w"> </span>&lt;inline<span class="w"> </span>MQL<span class="w"> </span>query&gt;
+$<span class="w"> </span>dd-sam<span class="w"> </span>locations<span class="w"> </span><span class="o">[</span>options<span class="o">]</span><span class="w"> </span>-q<span class="p">|</span>--query<span class="w"> </span>@&lt;file<span class="w"> </span>with<span class="w"> </span>MQL<span class="w"> </span>query&gt;
+</pre></div>
+</div>
+</div></blockquote>
+<p>This command will run the MetaCat query and get real time file replica locations from Rucio.</p>
+<p>Getting locations for project files:</p>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>dd-sam<span class="w"> </span>locations<span class="w"> </span><span class="o">[</span>options<span class="o">]</span><span class="w"> </span>&lt;DD<span class="w"> </span>project<span class="w"> </span>id&gt;
+</pre></div>
+</div>
+</div></blockquote>
+<p>Getting locations for specific files:</p>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>dd-sam<span class="w"> </span>locations<span class="w"> </span><span class="o">[</span>options<span class="o">]</span><span class="w"> </span>&lt;file<span class="w"> </span>DID&gt;<span class="w"> </span>...
+</pre></div>
+</div>
+</div></blockquote>
+<p>Common options for the command:</p>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>-s<span class="p">|</span>--schemes<span class="w"> </span>&lt;schema&gt;<span class="o">[</span>,...<span class="o">]</span><span class="w">     </span>-<span class="w"> </span>list<span class="w"> </span>of<span class="w"> </span>URL<span class="w"> </span>schemes.<span class="w"> </span>Default:<span class="w"> </span>all
+-r<span class="p">|</span>--rses<span class="w"> </span>&lt;rse&gt;<span class="o">[</span>,...<span class="o">]</span><span class="w">           </span>-<span class="w"> </span>list<span class="w"> </span>of<span class="w"> </span>RSEs.<span class="w"> </span>Default:<span class="w"> </span>all
+-j<span class="p">|</span>--json<span class="w">                       </span>-<span class="w"> </span>print<span class="w"> </span>results<span class="w"> </span>as<span class="w"> </span>JSON
+-p<span class="p">|</span>--pprint<span class="w">                     </span>-<span class="w"> </span>print<span class="w"> </span>results<span class="w"> </span>as<span class="w"> </span>pprint
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">DD-SAM</a><ul>
+<li><a class="reference internal" href="#dd-sam-configuration">DD-SAM configuration</a></li>
+<li><a class="reference internal" href="#replica-locations">Replica locations</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="project_query.html"
+                          title="previous chapter">Searching Projects by Metadata</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/dd-sam.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="project_query.html" title="Searching Projects by Metadata"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Data Dispatcher  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">DD-SAM</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2022, Igor Mandrichenko.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

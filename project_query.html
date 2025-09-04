@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Searching Projects by Metadata &#8212; Data Dispatcher  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="_static/nature.css?v=279e0f84" />
+    <script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="DD-SAM" href="dd-sam.html" />
+    <link rel="prev" title="File Processing with Data Dispatcher" href="worker.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="dd-sam.html" title="DD-SAM"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="worker.html" title="File Processing with Data Dispatcher"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Data Dispatcher  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Searching Projects by Metadata</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="searching-projects-by-metadata">
+<span id="searchql"></span><h1>Searching Projects by Metadata<a class="headerlink" href="#searching-projects-by-metadata" title="Link to this heading">¶</a></h1>
+<p>Each Data Dispatcher project has the following attributes:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>owner - string - username of the user who created the project</p></li>
+<li><p>state - string - current state of the project. Can be <code class="docutils literal notranslate"><span class="pre">active</span></code>, <code class="docutils literal notranslate"><span class="pre">abandoned</span></code>, <code class="docutils literal notranslate"><span class="pre">cancelled</span></code>, <code class="docutils literal notranslate"><span class="pre">done</span></code>, <code class="docutils literal notranslate"><span class="pre">failed</span></code></p></li>
+<li><p>created - datetime - date/time when the project was created</p></li>
+<li><p>id - integer - project id</p></li>
+<li><p>query - string - MetaCat query used to select files for the project</p></li>
+</ul>
+</div></blockquote>
+<p>In addition, a project may have an arbitrary dictionary with user-defined project metadata. For example:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;reco-version&quot;</span><span class="p">:</span> <span class="s2">&quot;1.23.7&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;mode&quot;</span><span class="p">:</span> <span class="s2">&quot;debug&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;events_per_file&quot;</span><span class="p">:</span> <span class="mi">1024</span><span class="p">,</span>
+    <span class="s2">&quot;MaxE&quot;</span><span class="p">:</span> <span class="mf">3.14</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Data Dispatcher does not use project metadata in any way except passing it as is to the worker, when asked for the next file to process
+for the project.
+Therefore, project metadata can be any JSON dictionary.
+There are no restrictions on the project metadata field names or complexity of the project metadata dictionary.</p>
+<p>Data Dispatcher provides a way to search projects by their attributes and metadata.</p>
+<section id="project-search-queries">
+<h2>Project Search Queries<a class="headerlink" href="#project-search-queries" title="Link to this heading">¶</a></h2>
+<p>The user can query Data Dispatcher for projects writing the query in a subset of MQL. Project query is a logical expression,
+built from operations on project attributes and metadata fields. If an attribute name appears in a query, it is assumed to
+be referring to the project attribute, not the project metadata.</p>
+<p>Project query is a logical combination of primitive operations expressed in terms of constants, project attributes and metadata fields.
+If metadata includes a field with the same name as a project attribute (e.g. “created” or “owner”), the query always uses the
+value of the named project attribute and not the metadata field.</p>
+<p>When the query is executed the combined logical expression is evaluated for each project and then those projects, for which the
+expression is evaluated to <code class="docutils literal notranslate"><span class="pre">true</span></code> are returned as the query result.</p>
+</section>
+<section id="expressions">
+<h2>Expressions<a class="headerlink" href="#expressions" title="Link to this heading">¶</a></h2>
+<p>The following primitive operations are supported:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>&lt;field&gt; present                                           – checks if the field is present in the project metadata</p></li>
+<li><p>&lt;field&gt; (&lt; | = | &gt; | &gt;= | &lt;= | !=) &lt;value&gt;                – comparison</p></li>
+<li><p>&lt;field&gt; ~ “&lt;regular expression&gt;”                          – string matching</p></li>
+<li><p>&lt;field&gt; in ( &lt;constant&gt;,&lt;constant&gt;,… )                  – enumerated set of values</p></li>
+<li><p>&lt;field&gt; in &lt;constant&gt;:&lt;constant&gt;                          – range of values</p></li>
+<li><p>&lt;constant&gt; in &lt;field&gt;                                     – if the &lt;field&gt; is an array, checks if the &lt;constant&gt; is in the array</p></li>
+<li><p>“&lt;constant&gt;” in &lt;field&gt;                                   – if the &lt;field&gt; is a string, checks if the “&lt;constant&gt;” a substring</p></li>
+</ul>
+</div></blockquote>
+<p>The query language also supports <code class="docutils literal notranslate"><span class="pre">not</span></code> variations of some operations:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>&lt;field&gt; not in ( &lt;constant&gt;,&lt;constant&gt;,… )</p></li>
+<li><p>&lt;field&gt; not in &lt;constant&gt;:&lt;constant&gt;</p></li>
+<li><p>&lt;constant&gt; not in &lt;field&gt;</p></li>
+<li><p>&lt;field&gt; not present</p></li>
+</ul>
+</div></blockquote>
+<p>For array metadata fields, the language supports indexing:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>&lt;field&gt;[&lt;index&gt;] (&lt; | = | &gt; | &gt;= | &lt;= | !=) &lt;value&gt;</p></li>
+<li><p>&lt;field&gt;[&lt;index&gt;] ~ “&lt;regular expression&gt;”</p></li>
+<li><p>&lt;field&gt;[&lt;index&gt;] in ( &lt;constant&gt;,&lt;constant&gt;,… )</p></li>
+<li><p>&lt;field&gt;[&lt;index&gt;] in &lt;constant&gt;:&lt;constant&gt;</p></li>
+<li><p>&lt;constant&gt; in &lt;field&gt;[&lt;index&gt;]</p></li>
+<li><p>“&lt;constant&gt;” in &lt;field&gt;[&lt;index&gt;]</p></li>
+</ul>
+</div></blockquote>
+<p>Here, <code class="docutils literal notranslate"><span class="pre">index</span></code> can be one of:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>integer - for arrays</p></li>
+<li><p>string - for dictionaries</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">any</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">all</span></code></p></li>
+</ul>
+</div></blockquote>
+<p>Keywords <code class="docutils literal notranslate"><span class="pre">any</span></code> and <code class="docutils literal notranslate"><span class="pre">all</span></code> can be used with dictionaries and arrays to apply the operation to any or all collection members. For example:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">events</span><span class="p">[</span><span class="nb">any</span><span class="p">]</span> <span class="o">=</span> <span class="mi">32768</span>
+<span class="n">events</span><span class="p">[</span><span class="nb">all</span><span class="p">]</span> <span class="ow">in</span> <span class="p">(</span><span class="mi">32174</span><span class="p">,</span> <span class="mi">32128</span><span class="p">)</span>
+<span class="n">bits</span><span class="p">[</span><span class="nb">any</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;on&quot;</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Atomic operations can be combined into more complex expressions using Boolean algebra:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span>state=active and ! (version &gt;= &quot;1.23&quot; and bits[any] = &quot;on&quot;)
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+<section id="constants">
+<h2>Constants<a class="headerlink" href="#constants" title="Link to this heading">¶</a></h2>
+<p>The project query constant can be of one of the following data types:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Integers</p></li>
+<li><p>Floating point constants</p></li>
+<li><p>Strings</p></li>
+<li><p>Boolean values (<code class="docutils literal notranslate"><span class="pre">true</span></code>, <code class="docutils literal notranslate"><span class="pre">false</span></code>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">null</span></code></p></li>
+</ul>
+</div></blockquote>
+<p>String constants are enclosed in double or single quotes. But “safe” string constants
+(string, which consist only of letters, digits and <code class="docutils literal notranslate"><span class="pre">%$&#64;_^.%*?-</span></code>) do not need to be enclosed in quotes.
+If possible an unquoted string will be interpreted as an integer or a floating point number.
+If you need such a string to remain a string, it needs to be enclosed in quotes.</p>
+<p>Unquoted strings <code class="docutils literal notranslate"><span class="pre">null</span></code>, <code class="docutils literal notranslate"><span class="pre">true</span></code> and <code class="docutils literal notranslate"><span class="pre">false</span></code> are treated as null and boolean constants.</p>
+<p>The project creation datetime attribute <cite>created</cite> is a date-time field. To enter its value in the query, use string in the format:</p>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;YYYY-MM-DD[ HH:MM:SS[+/-HH:MM]]&quot;</span>
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+<section id="query-examples">
+<h2>Query Examples<a class="headerlink" href="#query-examples" title="Link to this heading">¶</a></h2>
+<blockquote>
+<div><div class="highlight-default notranslate"><div class="highlight"><pre><span></span>owner=johndoe and created &gt; &quot;2022-04-01&quot;
+
+state = &quot;abandoned&quot;
+    and created &lt; &quot;2022-05-01 00:00:00&quot;
+    and created &gt;  &quot;2022-04-01 00:00:00&quot;
+
+state = failed and &quot;dc4:dc4&quot; in query
+
+query ~ &quot;files .*from.* dune:run[A-Z][0-9]+ .*&quot;
+
+owner in (&quot;alice&quot;, &quot;bob&quot;, &quot;carl&quot;)
+    and ! (
+        app_version &gt;= &quot;1.5&quot; and debug = true
+        or app_version &gt;= &quot;1.4&quot;
+    )
+    and state in (&quot;active&quot;, &quot;cancelled&quot;)
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Searching Projects by Metadata</a><ul>
+<li><a class="reference internal" href="#project-search-queries">Project Search Queries</a></li>
+<li><a class="reference internal" href="#expressions">Expressions</a></li>
+<li><a class="reference internal" href="#constants">Constants</a></li>
+<li><a class="reference internal" href="#query-examples">Query Examples</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="worker.html"
+                          title="previous chapter">File Processing with Data Dispatcher</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="dd-sam.html"
+                          title="next chapter">DD-SAM</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/project_query.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="dd-sam.html" title="DD-SAM"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="worker.html" title="File Processing with Data Dispatcher"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Data Dispatcher  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Searching Projects by Metadata</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2022, Igor Mandrichenko.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

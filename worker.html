@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>File Processing with Data Dispatcher &#8212; Data Dispatcher  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="_static/nature.css?v=279e0f84" />
+    <script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Searching Projects by Metadata" href="project_query.html" />
+    <link rel="prev" title="Python API" href="webapi.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="project_query.html" title="Searching Projects by Metadata"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="webapi.html" title="Python API"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Data Dispatcher  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File Processing with Data Dispatcher</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="file-processing-with-data-dispatcher">
+<h1>File Processing with Data Dispatcher<a class="headerlink" href="#file-processing-with-data-dispatcher" title="Link to this heading">¶</a></h1>
+<p>Basic file processing workflow looks like this:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>Attempt to reserve a file using <code class="docutils literal notranslate"><span class="pre">next</span> <span class="pre">file</span></code> finction</p></li>
+</ol>
+<blockquote>
+<div><ul>
+<li><p>If reserved:</p>
+<ol class="arabic simple">
+<li><p>Process the file</p></li>
+<li><p>Release the file</p></li>
+</ol>
+<blockquote>
+<div><ul class="simple">
+<li><p>if processed successfully, use <code class="docutils literal notranslate"><span class="pre">file</span> <span class="pre">done</span></code> function</p></li>
+<li><p>if processing failed, use <code class="docutils literal notranslate"><span class="pre">file</span> <span class="pre">failed</span></code> function</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>If project is done, stop</p></li>
+<li><p>If timed out, go back to (1)</p></li>
+</ul>
+</div></blockquote>
+</div></blockquote>
+<section id="using-python-api">
+<h2>Using Python API<a class="headerlink" href="#using-python-api" title="Link to this heading">¶</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># The worker is assumed to know its project id and CPU site name</span>
+<span class="n">project_id</span> <span class="o">=</span> <span class="o">...</span>
+<span class="n">cpu_site</span> <span class="o">=</span> <span class="o">...</span>
+
+<span class="c1"># create DD client object</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">data_dispatcher.api</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataDispatcherClient</span>
+<span class="n">client</span> <span class="o">=</span> <span class="n">DataDispatcherClient</span><span class="p">(</span><span class="n">server_url</span><span class="p">)</span>
+
+<span class="c1">#</span>
+<span class="c1"># Reserve a file to process</span>
+<span class="c1">#</span>
+
+<span class="n">project_done</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">reserved_file</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="k">while</span> <span class="ow">not</span> <span class="n">project_done</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">reserved_file</span><span class="p">:</span>
+    <span class="c1"># reserve the next file to process</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="n">next_file</span><span class="p">(</span><span class="n">project_id</span><span class="p">,</span> <span class="n">cpu_site</span><span class="o">=</span><span class="n">cpu_site</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="n">timeout</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="c1"># file reserved</span>
+        <span class="n">reserved_file</span> <span class="o">=</span> <span class="n">result</span>
+    <span class="k">elif</span> <span class="n">result</span><span class="p">:</span>
+        <span class="c1"># reservation timed out, but the project is not over yet</span>
+        <span class="o">...</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">project_done</span> <span class="o">=</span> <span class="kc">True</span>
+
+<span class="k">if</span> <span class="n">reserved_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="c1">#</span>
+    <span class="c1"># A file was successfully reserved</span>
+    <span class="c1">#</span>
+    <span class="n">did</span> <span class="o">=</span> <span class="n">reserved_file</span><span class="p">[</span><span class="s2">&quot;namespace&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="s1">&#39;:&#39;</span> <span class="o">+</span> <span class="n">reserved_file</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+    <span class="n">replica</span> <span class="o">=</span> <span class="n">reserved_file</span><span class="p">[</span><span class="s2">&quot;replicas&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>         <span class="c1"># get the closest replica</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="n">reserved_file</span><span class="p">[</span><span class="s2">&quot;url&quot;</span><span class="p">]</span>
+
+    <span class="c1"># process the file ...</span>
+
+    <span class="c1">#</span>
+    <span class="c1"># Release the file</span>
+    <span class="c1">#</span>
+
+    <span class="k">if</span> <span class="n">processing_successful</span><span class="p">:</span>
+        <span class="n">client</span><span class="o">.</span><span class="n">file_done</span><span class="p">(</span><span class="n">project_id</span><span class="p">,</span> <span class="n">did</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="c1"># proessing failed</span>
+        <span class="k">if</span> <span class="n">retry_later</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">file_failed</span><span class="p">(</span><span class="n">project_id</span><span class="p">,</span> <span class="n">did</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">client</span><span class="o">.</span><span class="n">file_failed</span><span class="p">(</span><span class="n">project_id</span><span class="p">,</span> <span class="n">did</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="using-data-dispatcher-cli">
+<h2>Using Data Dispatcher CLI<a class="headerlink" href="#using-data-dispatcher-cli" title="Link to this heading">¶</a></h2>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+
+<span class="nv">my_project</span><span class="o">=</span>...
+<span class="nv">my_cpu_site</span><span class="o">=</span>...
+
+<span class="c1">#</span>
+<span class="c1"># Attempt to reserve a file</span>
+<span class="c1">#</span>
+<span class="nv">out</span><span class="o">=</span><span class="k">$(</span>ddisp<span class="w"> </span>worker<span class="w"> </span>next<span class="w"> </span>-j<span class="w"> </span>file_info.json<span class="w"> </span>-c<span class="w"> </span><span class="nv">$my_cpu_site</span><span class="w"> </span><span class="nv">$my_project</span><span class="k">)</span>
+<span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="nv">$?</span><span class="w"> </span>-eq<span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="o">]</span>
+<span class="k">then</span>
+<span class="w">     </span><span class="nv">did</span><span class="o">=</span><span class="nv">$out</span><span class="w">           </span><span class="c1"># reserved file DID (namespace:name)</span>
+
+<span class="w">     </span><span class="c1">#</span>
+<span class="w">     </span><span class="c1"># Process the file using the contents of file_info.json</span>
+<span class="w">     </span><span class="c1">#</span>
+<span class="w">     </span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="nv">$processed_successfully</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="w">         </span>ddisp<span class="w"> </span>worker<span class="w"> </span><span class="k">done</span><span class="w"> </span><span class="nv">$my_project</span><span class="w"> </span><span class="nv">$did</span>
+<span class="w">     </span><span class="k">else</span>
+<span class="w">         </span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="nv">$retry</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+<span class="w">             </span>ddisp<span class="w"> </span>worker<span class="w"> </span>failed<span class="w"> </span><span class="nv">$my_project</span><span class="w"> </span><span class="nv">$did</span>
+<span class="w">         </span><span class="k">else</span>
+<span class="w">             </span>ddisp<span class="w"> </span>worker<span class="w"> </span>failed<span class="w"> </span>-f<span class="w"> </span><span class="nv">$my_project</span><span class="w"> </span><span class="nv">$did</span>
+<span class="w">         </span><span class="k">fi</span>
+<span class="w">     </span><span class="k">fi</span>
+<span class="k">else</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="nv">$out</span><span class="w"> </span><span class="k">in</span>
+<span class="w">        </span><span class="k">done</span><span class="o">)</span>
+<span class="w">            </span><span class="c1"># project is done</span>
+<span class="w">            </span><span class="p">;;</span>
+<span class="w">        </span>timeout<span class="o">)</span>
+<span class="w">            </span><span class="c1"># timed out, can try to reserve again</span>
+<span class="w">            </span><span class="p">;;</span>
+<span class="w">    </span><span class="k">esac</span>
+<span class="k">fi</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">File Processing with Data Dispatcher</a><ul>
+<li><a class="reference internal" href="#using-python-api">Using Python API</a></li>
+<li><a class="reference internal" href="#using-data-dispatcher-cli">Using Data Dispatcher CLI</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="webapi.html"
+                          title="previous chapter">Python API</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="project_query.html"
+                          title="next chapter">Searching Projects by Metadata</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/worker.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="project_query.html" title="Searching Projects by Metadata"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="webapi.html" title="Python API"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Data Dispatcher  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">File Processing with Data Dispatcher</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2022, Igor Mandrichenko.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

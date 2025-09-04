@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Data Dispatcher Client Installation and Configuration &#8212; Data Dispatcher  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="_static/nature.css?v=279e0f84" />
+    <script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Data Dispatcher User Interface" href="ui.html" />
+    <link rel="prev" title="Data Dispatcher Documentation" href="index.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="ui.html" title="Data Dispatcher User Interface"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Data Dispatcher Documentation"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Data Dispatcher  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Data Dispatcher Client Installation and Configuration</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="data-dispatcher-client-installation-and-configuration">
+<h1>Data Dispatcher Client Installation and Configuration<a class="headerlink" href="#data-dispatcher-client-installation-and-configuration" title="Link to this heading">¶</a></h1>
+<section id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Link to this heading">¶</a></h2>
+<p>To install the Data Dispatcher client, use pip command:</p>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>--user<span class="w"> </span>datadispatcher_client
+</pre></div>
+</div>
+</div></blockquote>
+<p>or if using Fermi Spack:</p>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nv">$spack</span><span class="w"> </span>install<span class="w"> </span>data-dispatcher
+</pre></div>
+</div>
+</div></blockquote>
+<p>Alternatively:</p>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/fermitools/metacat.git
+$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>metacat
+$<span class="w"> </span>python<span class="w"> </span>setup.py<span class="w"> </span>install<span class="w"> </span>--user
+$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>..
+$<span class="w"> </span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/fermitools/data_dispatcher.git
+$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>data_dispatcher
+$<span class="w"> </span>python<span class="w"> </span>setup.py<span class="w"> </span>install<span class="w"> </span>--user
+</pre></div>
+</div>
+</div></blockquote>
+<p>If using <code class="docutils literal notranslate"><span class="pre">--user</span></code>, make sure your <code class="docutils literal notranslate"><span class="pre">~/.local/bin</span></code> is in your PATH</p>
+</section>
+<section id="configuration">
+<h2>Configuration<a class="headerlink" href="#configuration" title="Link to this heading">¶</a></h2>
+<p>To configure the client, you need to define the following environment variables:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>DATA_DISPATCHER_URL - URL for Data Dispatcher data server</p></li>
+<li><p>DATA_DISPATCHER_AUTH_URL - URL for Data Dispatcher authentication server</p></li>
+<li><p>METACAT_SERVER_URL - URL for MetaCat data srever</p></li>
+</ul>
+</div></blockquote>
+<p>For DUNE, the values are:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>DATA_DISPATCHER_URL = <a class="reference external" href="https://metacat.fnal.gov:9443/dune/dd/data">https://metacat.fnal.gov:9443/dune/dd/data</a></p></li>
+<li><p>DATA_DISPATCHER_AUTH_URL - <a class="reference external" href="https://metacat.fnal.gov:8143/auth/dune">https://metacat.fnal.gov:8143/auth/dune</a></p></li>
+<li><p>METACAT_SERVER_URL - <a class="reference external" href="https://metacat.fnal.gov:9443/dune_meta_demo/app">https://metacat.fnal.gov:9443/dune_meta_demo/app</a></p></li>
+</ul>
+</div></blockquote>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Data Dispatcher Client Installation and Configuration</a><ul>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#configuration">Configuration</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="index.html"
+                          title="previous chapter">Data Dispatcher Documentation</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="ui.html"
+                          title="next chapter">Data Dispatcher User Interface</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/install.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="ui.html" title="Data Dispatcher User Interface"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Data Dispatcher Documentation"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Data Dispatcher  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Data Dispatcher Client Installation and Configuration</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2022, Igor Mandrichenko.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

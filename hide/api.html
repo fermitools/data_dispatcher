@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="../">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>API &#8212; Data Dispatcher  documentation</title>
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/nature.css?v=279e0f84" />
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Data Dispatcher  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">API</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="api">
+<h1>API<a class="headerlink" href="#api" title="Link to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">metacat.webapi.</span></span><span class="sig-name descname"><span class="pre">MetaCatClient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">server_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auth_server_url</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_concurrent_queries</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">token</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">token_file</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">token_library</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timeout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Initializes the MetaCatClient object</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>server_url</strong> (<em>str</em>) – The server endpoint URL, defult = from METACAT_SERVER_URL environment variable</p></li>
+<li><p><strong>auth_server_url</strong> (<em>str</em>) – The endpoint URL for the Authentication server, default = server_url + “/auth”</p></li>
+<li><p><strong>max_concurrent_queries</strong> (<em>int</em><em>, </em><em>optional</em>) – Controls the concurrency when asynchronous queries are used</p></li>
+<li><p><strong>token_file</strong> (<em>str</em>) – File path to read the authentication token from</p></li>
+<li><p><strong>token</strong> (<em>bytes</em><em> or </em><em>str</em><em> or </em><em>SignedToken</em>) – Use this token for authentication, optional</p></li>
+<li><p><strong>timeout</strong> (<em>int</em><em> or </em><em>float</em>) – Request timeout in seconds. Default: None - use default timeout, which is 300 seconds</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">add_child_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">parent_spec</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">child_spec</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Adds a child dataset to a dataset.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>parent_spec</strong> (<em>str</em>) – Parent namespace, name (“namespace:name”)</p></li>
+<li><p><strong>child_spec</strong> (<em>str</em>) – Child namespace, name (“namespace:name”)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">add_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Add existing files to an existing dataset. Requires client authentication.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset</strong> (<em>str</em>) – “namespace:name” or “name”, if namespace argument is given</p></li>
+<li><p><strong>query</strong> (<em>str</em>) – MQL query to run and add files matching the query</p></li>
+<li><p><strong>file_list</strong> (<em>list</em>) – <p>List of dictionaries, one dictionary per file. Each dictionary must contain either a file id</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span> <span class="s2">&quot;fid&quot;</span><span class="p">:</span> <span class="s2">&quot;abcd12345&quot;</span> <span class="p">}</span>
+</pre></div>
+</div>
+<p>or namespace/name:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;filename.data&quot;</span><span class="p">,</span> <span class="s2">&quot;namespace&quot;</span><span class="p">:</span> <span class="s2">&quot;my_namespace&quot;</span> <span class="p">}</span>
+</pre></div>
+</div>
+<p>or DID:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span> <span class="s2">&quot;did&quot;</span><span class="p">:</span> <span class="s2">&quot;my_namespace:filename.data&quot;</span> <span class="p">}</span>
+</pre></div>
+</div>
+</p></li>
+<li><p><strong>namespace</strong> (<em>str</em><em>, </em><em>optional</em>) – Default namespace. If a <code class="docutils literal notranslate"><span class="pre">file_list</span></code> item is specified with a name without a namespace, the <code class="docutils literal notranslate"><span class="pre">default</span> <span class="pre">namespace</span></code>
+will be used.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>number of files added to the dataset</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Either <code class="docutils literal notranslate"><span class="pre">file_list</span></code> or <code class="docutils literal notranslate"><span class="pre">query</span></code> must be specified, but not both</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">async_query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Run the query asynchronously. Requires client authentication if save_as or add_to are used.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>query</strong> (<em>str</em>) – Query in MQL</p></li>
+<li><p><strong>data</strong> (<em>anything</em>) – Arbitrary data associated with this query</p></li>
+<li><p><strong>args</strong> – Same keyword arguments as for the query() method</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p><code class="docutils literal notranslate"><span class="pre">pythreader</span></code> Promise object associated with this query. The promise object will have Data attribute containig the object passed as the <code class="docutils literal notranslate"><span class="pre">data</span></code>
+argument to the <code class="docutils literal notranslate"><span class="pre">async_query</span></code> call.</p>
+<p>See notes below for more on how to use this method.</p>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Promise</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">create_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">did</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frozen</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">monotonic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata_requirements</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">files_query</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subsets_query</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Creates new dataset. Requires client authentication.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>did</strong> (<em>str</em>) – “namespace:name”</p></li>
+<li><p><strong>frozen</strong> (<em>bool</em>)</p></li>
+<li><p><strong>monotonic</strong> (<em>bool</em>)</p></li>
+<li><p><strong>metadata</strong> (<em>dict</em>) – Dataset metadata</p></li>
+<li><p><strong>metadata_requirements</strong> (<em>dict</em>) – Metadata requirements for files in the dataset</p></li>
+<li><p><strong>file_query</strong> (<em>str</em>) – Run MQL file query and add resulting files to the new dataset</p></li>
+<li><p><strong>dataset_query</strong> (<em>str</em>) – Run MQL dataset query and add resulting datasets to the new dataset as subsets</p></li>
+<li><p><strong>description</strong> (<em>str</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>created dataset attributes</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">create_namespace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">owner_role</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Creates new namespace. Requires client authentication.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>name</strong> (<em>str</em>) – Namespace name</p></li>
+<li><p><strong>owner_role</strong> (<em>str</em>) – Owner role for the new namespace. The user must be a member of the role.
+Optional. If unspecified, the new namespace will be owned by the user.</p></li>
+<li><p><strong>description</strong> (<em>str</em>) – New namespace description</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>New namespace information</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">declare_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">did</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">auto_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_did</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_namespace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checksums</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dry_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Declare new file and add it to the dataset. Requires client authentication.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>did</strong> (<em>str</em>) – file “namespace:name”</p></li>
+<li><p><strong>namespace</strong> (<em>str</em>) – file namespace</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – file name</p></li>
+<li><p><strong>auto_name</strong> (<em>str</em>) – pattern to use for file name auto generation, default None - do not auto-generate file name</p></li>
+<li><p><strong>dataset_did</strong> (<em>str</em>) – dataset “namespace:name”</p></li>
+<li><p><strong>dataset_namespace</strong> (<em>str</em>) – dataset namespace</p></li>
+<li><p><strong>dataset_name</strong> (<em>str</em>) – dataset name</p></li>
+<li><p><strong>size</strong> (<em>int</em>) – file size in bytes, default 0</p></li>
+<li><p><strong>metadata</strong> (<em>dict</em>) – file metadata, default empty dictionary</p></li>
+<li><p><strong>fid</strong> (<em>str</em>) – file id, default None - to be auto-generated</p></li>
+<li><p><strong>checksums</strong> (<em>dict</em>) – dictionary with checksum values by the checksum type: {“type”:”value”, …}</p></li>
+<li><p><strong>parents</strong> (<em>list</em><em> of </em><em>dicts</em>) – <dl class="simple">
+<dt>each dict represents one parent file. The dict must contain one of the the following</dt><dd><ul>
+<li><p>”fid” - parent file id</p></li>
+<li><p>”namespace” and “name” - parent file namespace and name</p></li>
+<li><p>”did” - parent file DID (“&lt;namespace&gt;:&lt;name&gt;”)</p></li>
+</ul>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>dry_run</strong> (<em>boolean</em>) – If true, run all the necessary checks but stop short of actual file declaraion or adding to a dataset.
+If not all checks are successful, generate eirher InvalidMetadataError or WebApiError.
+Default: False = do declare</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>dictionary with file name, namespace and file id. Names and file ids will be auto-generated as necessary.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<dl class="simple">
+<dt>At least one of the following must be specified for the file:</dt><dd><ul class="simple">
+<li><p>did</p></li>
+<li><p>namespace and either name or auto_name</p></li>
+</ul>
+</dd>
+<dt>At least one of the following must be specified for the dataset:</dt><dd><ul class="simple">
+<li><p>dataset_did</p></li>
+<li><p>dataset_namespace and dataset_name</p></li>
+</ul>
+</dd>
+</dl>
+<p>Auto-name pattern can be any string with the following substrings, which will be replaced with appropriate values to generate the file name:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>$clock - current interger timestamp in milliseconds</p></li>
+<li><p>$clock3 - last 3 digits of $clock - milliseconds only</p></li>
+<li><p>$clock6 - last 6 digits of $clock</p></li>
+<li><p>$clock9 - last 9 digits of $clock</p></li>
+<li><p>$uuid - random UUID in hexadecimal representation, 32 hex digits</p></li>
+<li><p>$uuid16 - 16 hex digits from random UUID hexadecimal representation</p></li>
+<li><p>$uuid8 - 8 hex digits from random UUID hexadecimal representation</p></li>
+<li><p>$fid - file id</p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">declare_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">files</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dry_run</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">as_required</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Declare new files and add them to an existing dataset. Requires client authentication.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset</strong> (<em>str</em>) – “namespace:name”</p></li>
+<li><p><strong>files</strong> (<em>list</em><em> or </em><em>dict</em>) – List of dictionaries, one dictionary per a file to be declared. See Notes below for the expected contents of each
+dictionary.
+For convenience, if declaring single file, the argument can be the single file dictionary instead of a list.</p></li>
+<li><p><strong>namespace</strong> (<em>str</em><em>, </em><em>optional</em>) – Default namespace for files to be declared</p></li>
+<li><p><strong>dry_run</strong> (<em>boolean</em>) – If true, run all the necessary checks but stop short of actual file declaraion or adding to a dataset.
+If not all checks are successful, generate eirher InvalidMetadataError or WebApiError.
+Default: False = do declare</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>list of dictionaries, one dictionary per file with file ids: { “fid”: “…” }</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Each file to be declared must be represented with a dictionary. The dictionary must contain one of:</p>
+<p>“did” - string in the format “&lt;namespace&gt;:&lt;name&gt;”</p>
+<dl class="simple">
+<dt>“name” - file name and optionaly “namespace”. If namespace is not present, the <code class="docutils literal notranslate"><span class="pre">namespace</span></code> argument will be used</dt><dd><p>as the default namespace</p>
+</dd>
+</dl>
+<p>“auto_name” - pattern to auto-generate file name</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;namespace&quot;</span><span class="p">:</span> <span class="s2">&quot;namespace&quot;</span><span class="p">,</span>           <span class="c1"># optional, namespace can be specified for each file explicitly or implicitly using the namespace=... argument</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;filename&quot;</span><span class="p">,</span>                 <span class="c1"># optional,</span>
+    <span class="s2">&quot;did&quot;</span><span class="p">:</span> <span class="s2">&quot;namespace:filename&quot;</span><span class="p">,</span>        <span class="c1"># optional, convenience for Rucio users</span>
+                                        <span class="c1"># either &quot;did&quot; or &quot;name&quot;, &quot;namespace&quot; must be present</span>
+    <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="o">...</span><span class="p">,</span>                        <span class="c1"># required, integer number of bytes</span>
+    <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{</span><span class="o">...</span><span class="p">},</span>                  <span class="c1"># optional, file metadata, a dictionary with arbitrary JSON&#39;able contents</span>
+    <span class="s2">&quot;fid&quot;</span><span class="p">:</span>  <span class="s2">&quot;...&quot;</span><span class="p">,</span>                      <span class="c1"># optional, file id. Will be auto-generated if unspecified.</span>
+                                        <span class="c1"># if specified, must be unique</span>
+    <span class="s2">&quot;parents&quot;</span><span class="p">:</span> <span class="p">[</span><span class="o">...</span><span class="p">],</span>                   <span class="c1"># optional, list of dicts, one dict per parent. See below.</span>
+    <span class="s2">&quot;checksums&quot;</span><span class="p">:</span> <span class="p">{</span>                      <span class="c1"># optional, checksums dictionary</span>
+        <span class="s2">&quot;method&quot;</span><span class="p">:</span> <span class="s2">&quot;value&quot;</span><span class="p">,</span><span class="o">...</span>
+    <span class="p">},</span>
+    <span class="s2">&quot;auto_name&quot;</span><span class="p">:</span> <span class="s2">&quot;...&quot;</span>                  <span class="c1"># optional, pattern to auto-generate file name if name is not specified or null</span>
+<span class="p">},</span><span class="o">...</span>
+</pre></div>
+</div>
+<p>Parents are specified with dictionaries, one dictionary per file. Each dictionary specifies the parent file in one of three ways:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>“did”: “&lt;namespace&gt;:&lt;name&gt;”</p></li>
+<li><p>“namespace”:”…”, “name”:”…”</p></li>
+<li><p>“fid”: “&lt;file id&gt;”</p></li>
+</ul>
+</div></blockquote>
+<p>DEPRECATED: if the parent is specified with a string instead of a dictionary, it is interpreferd as the parent file id.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">delete_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">did</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Delete an existing file. The file will be removed from all datasets and the database and its name and file id can be reused.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>did</strong> (<em>str</em>) – file “namespace:name”</p></li>
+<li><p><strong>fid</strong> (<em>str</em>) – file id</p></li>
+<li><p><strong>namespace</strong> (<em>str</em>) – file namespace</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – file name</p></li>
+<li><p><strong>retire</strong> (<em>bool</em>) – whether the file should be retired</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">get_category</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Get category information</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>A dictionary with category information or None if not found</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">get_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">did</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">exact_file_count</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Gets single dataset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>did</strong> (<em>str - &quot;namespace:name&quot;</em>)</p></li>
+<li><p><strong>namespace</strong> (<em>str</em>)</p></li>
+<li><p><strong>name</strong> (<em>str</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>dataset attributes or None if the dataset was not found</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">get_dataset_counts</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">did</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Gets single dataset files, subsets, supersets, etc. counts</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>did</strong> (<em>str - &quot;namespace:name&quot;</em>)</p></li>
+<li><p><strong>namespace</strong> (<em>str</em>)</p></li>
+<li><p><strong>name</strong> (<em>str</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>dataset counts or None if the dataset was not found</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">get_dataset_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">did</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">with_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_retired_files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Gets single dataset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>did</strong> (<em>str - &quot;namespace:name&quot;</em>)</p></li>
+<li><p><strong>namespace</strong> (<em>str</em>)</p></li>
+<li><p><strong>name</strong> (<em>str</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>generates sequence of dictionaries, one dictionary per file</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>generator</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">get_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">did</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">with_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">with_provenance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">with_datasets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Get one file record</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>fid</strong> (<em>str</em><em>, </em><em>optional</em>) – File id</p></li>
+<li><p><strong>name</strong> (<em>str</em><em>, </em><em>optional</em>)</p></li>
+<li><p><strong>namespace</strong> (<em>str</em><em>, </em><em>optional</em>) – name and namespace must be specified together</p></li>
+<li><p><strong>did</strong> (<em>str</em><em>, </em><em>optional</em>) – “nemaspace:name”</p></li>
+<li><p><strong>with_metadata</strong> (<em>boolean</em>) – whether to include file metadata</p></li>
+<li><p><strong>with_provenance</strong> (<em>boolean</em>) – whether to include parents and children list</p></li>
+<li><p><strong>with_datasets</strong> (<em>boolean</em>) – whether to include the list of datasets the file is in</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p><p>dictionary with file information or None if the file was not found</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;namespace:filename&quot;</span><span class="p">,</span>       <span class="c1"># file name, namespace</span>
+    <span class="s2">&quot;fid&quot;</span><span class="p">:</span>  <span class="s2">&quot;...&quot;</span><span class="p">,</span>                      <span class="c1"># files id</span>
+    <span class="s2">&quot;creator&quot;</span><span class="p">:</span>  <span class="s2">&quot;...&quot;</span><span class="p">,</span>                  <span class="c1"># username of the file creator</span>
+    <span class="s2">&quot;created_timestamp&quot;</span><span class="p">:</span>   <span class="o">...</span><span class="p">,</span>         <span class="c1"># numeric UNIX timestamp</span>
+    <span class="s2">&quot;size&quot;</span><span class="p">:</span> <span class="o">...</span><span class="p">,</span>                        <span class="c1"># file size in bytes</span>
+    <span class="s2">&quot;checksums&quot;</span><span class="p">:</span> <span class="p">{</span> <span class="o">...</span> <span class="p">},</span>               <span class="c1"># file checksums</span>
+
+    <span class="c1"># included if with_provenance=True</span>
+    <span class="s2">&quot;parents&quot;</span><span class="p">:</span>  <span class="p">[</span><span class="s2">&quot;fid&quot;</span><span class="p">,</span><span class="o">...</span><span class="p">],</span>            <span class="c1"># list of ids for the file parent files</span>
+    <span class="s2">&quot;children&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;fid&quot;</span><span class="p">,</span><span class="o">...</span><span class="p">],</span>            <span class="c1"># list of ids for the file child files</span>
+
+    <span class="c1"># included if with_metadata=True</span>
+    <span class="s2">&quot;metadata&quot;</span><span class="p">:</span> <span class="p">{</span> <span class="o">...</span> <span class="p">},</span>                <span class="c1"># file metadata</span>
+
+    <span class="c1"># included if with_datasets=True</span>
+    <span class="s2">&quot;datasets&quot;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;namespace&quot;</span><span class="p">:</span><span class="s2">&quot;...&quot;</span><span class="p">,</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span><span class="s2">&quot;...&quot;</span><span class="p">},</span> <span class="o">...</span>
+    <span class="p">]</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Retrieving file provenance and metadata takes slightly longer time</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">get_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lookup_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">with_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">with_provenance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Get many file records</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lookup_list</strong> (<em>list</em>) – <dl class="simple">
+<dt>List of dictionaries, one dictionary per file. Each dictionary must have either</dt><dd><p>”did”:”namespace:name”, or
+“namespace”:”…” and “name”:”…” or
+“fid”:”file id”</p>
+</dd>
+</dl>
+</p></li>
+<li><p><strong>with_metadata</strong> (<em>boolean</em>) – whether to include file metadata</p></li>
+<li><p><strong>with_provenance</strong> – whether to include parents and children list</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of file records, each record is the same as returned by get_file()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">get_named_query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">namespace</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Get named query</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>namespace</strong> (<em>str</em>)</p></li>
+<li><p><strong>name</strong> (<em>str</em>)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A dictionary with information about the named query or None if the named query does not exist.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict or None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">get_namespace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Get information about a snamespace</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – Namespace name</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Namespace information or None if the namespace was not found</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">get_namespaces</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">names</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Get information for multiple namespaces</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>names</strong> (<em>list</em><em> of </em><em>str</em>) – Namespace names</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Namespace information</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">get_version</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><p>Returns server version as text</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">list_categories</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>List namespaces</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>root</strong> (<em>str</em>) – Optional, if present, list only categories under the root</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of dictionaries with category information sorted by category path</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">list_datasets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">namespace_pattern</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_pattern</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">with_counts</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Gets the list of datasets with namespace/name matching the templates. The templates are
+Python <code class="docutils literal notranslate"><span class="pre">fnmatch</span></code> module style templates where <code class="docutils literal notranslate"><span class="pre">'*'</span></code> matches any substring and <code class="docutils literal notranslate"><span class="pre">'?'</span></code> matches a single character.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>namespace_pattern</strong> (<em>str</em>)</p></li>
+<li><p><strong>name_pattern</strong> (<em>str</em>)</p></li>
+<li><p><strong>with_file_counts</strong> (<em>boolean</em>) – controls whether the results should include file counts or dataset names only</p></li>
+</ul>
+</dd>
+<dt class="field-even">Yields<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>generator</em> – yields dictionaries like {“namespace”:…, “name”:…, “file_count”:…}</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">list_named_queries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">namespace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Get multiple named queries</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>namespace</strong> (<em>str</em>) – optional, if specified the list will include all named queries in the namespace. Orherwise all named queries will be returned</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of dictionaries with information about the named queries.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">list_namespaces</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">owner_user</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">owner_role</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">directly</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>List namespaces</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pattern</strong> (<em>str</em>) – Optional fnmatch style pattern to filter namespaces by name</p></li>
+<li><p><strong>owner_user</strong> (<em>str</em>) – Optional, return only namespaces owned by the specified user</p></li>
+<li><p><strong>directly</strong> (<em>boolean</em>) – If False and owner_user is specified, return also namespaces owned by all roles the user is in
+Ignored if owner_user is not specified</p></li>
+<li><p><strong>owner_role</strong> (<em>str</em>) – Optional, return only namespaces owned by the specified role.
+Ignored if owner_user is also specified</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>List of dictionaries with namespace information sorted by the namespace name</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">move_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">namespace</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>namespace</strong> (<em>str</em>) – namespace to move files to</p></li>
+<li><p><strong>query</strong> (<em>str</em>) – MQL query to run and add files matching the query</p></li>
+<li><p><strong>file_list</strong> (<em>list</em>) – <p>List of dictionaries, one dictionary per file. Each dictionary must contain either a file id</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span> <span class="s2">&quot;fid&quot;</span><span class="p">:</span> <span class="s2">&quot;abcd12345&quot;</span> <span class="p">}</span>
+</pre></div>
+</div>
+<p>or namespace/name:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;filename.data&quot;</span><span class="p">,</span> <span class="s2">&quot;namespace&quot;</span><span class="p">:</span> <span class="s2">&quot;my_namespace&quot;</span> <span class="p">}</span>
+</pre></div>
+</div>
+<p>or DID:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span> <span class="s2">&quot;did&quot;</span><span class="p">:</span> <span class="s2">&quot;my_namespace:filename.data&quot;</span> <span class="p">}</span>
+</pre></div>
+</div>
+</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>number of files moved, list of errors, if any</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>tuple</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">query</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">with_metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">with_provenance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save_as</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_to</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_retired_files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">summary</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Run file query. Requires client authentication if save_as or add_to are used.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>query</strong> (<em>str</em>) – Query in MQL</p></li>
+<li><p><strong>namespace</strong> (<em>str</em>) – default namespace for the query</p></li>
+<li><p><strong>include_retired_files</strong> – boolean, whether to include retired files into the query results, default=False</p></li>
+<li><p><strong>with_metadata</strong> (<em>boolean</em>) – whether to return file metadata</p></li>
+<li><p><strong>with_provenance</strong> (<em>boolean</em>) – whether to return parents and children list</p></li>
+<li><p><strong>save_as</strong> (<em>str</em>) – namespace:name for a new dataset to create and add found files to</p></li>
+<li><p><strong>add_to</strong> (<em>str</em>) – namespace:name for an existing dataset to add found files to</p></li>
+<li><p><strong>summary</strong> (<em>str</em><em> or </em><em>None</em>) – “count” - return [{“count”: n, “total_size”: nbytes }]
+“keys” - return list of list of all top level metadata keys for the selected files
+<code class="docutils literal notranslate"><span class="pre">summary</span></code> can not be used together with <code class="docutils literal notranslate"><span class="pre">save_as</span></code> or <code class="docutils literal notranslate"><span class="pre">add_to</span></code></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>dictionary with file information. Each file will be represented with a dictionary in this list.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list of dicts</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Retrieving file provenance and metadata takes slightly longer time</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">remove_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Remove a dataset. Requires client authentication.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dataset</strong> (<em>str</em>) – “namespace:name”</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">remove_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">query</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Remove files from a dataset. Requires client authentication.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset</strong> (<em>str</em>) – “namespace:name” or “name”, if namespace argument is given</p></li>
+<li><p><strong>query</strong> (<em>str</em>) – MQL query to run and add files matching the query</p></li>
+<li><p><strong>file_list</strong> (<em>list</em>) – <p>List of dictionaries, one dictionary per file. Each dictionary must contain either a file id</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span> <span class="s2">&quot;fid&quot;</span><span class="p">:</span> <span class="s2">&quot;abcd12345&quot;</span> <span class="p">}</span>
+</pre></div>
+</div>
+<p>or namespace/name:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span> <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;filename.data&quot;</span><span class="p">,</span> <span class="s2">&quot;namespace&quot;</span><span class="p">:</span> <span class="s2">&quot;my_namespace&quot;</span> <span class="p">}</span>
+</pre></div>
+</div>
+<p>or DID:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span> <span class="s2">&quot;did&quot;</span><span class="p">:</span> <span class="s2">&quot;my_namespace:filename.data&quot;</span> <span class="p">}</span>
+</pre></div>
+</div>
+</p></li>
+<li><p><strong>namespace</strong> (<em>str</em><em>, </em><em>optional</em>) – Default namespace. If a <code class="docutils literal notranslate"><span class="pre">file_list</span></code> item is specified with a name without a namespace, the <code class="docutils literal notranslate"><span class="pre">default</span> <span class="pre">namespace</span></code>
+will be used.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>actual number of files removed from the dataset</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Either <code class="docutils literal notranslate"><span class="pre">file_list</span></code> or <code class="docutils literal notranslate"><span class="pre">query</span></code> must be specified, but not both</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">retire_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">did</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">retire</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Modify retired status of the file. Retured file remains in the database, “occupies” the name in the namespace, but
+id not visible to normal queries. Retired file can be brought back to normal using this method too.</p>
+<p>If you need to completely remove the file, use <cite>delete_file</cite> method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>did</strong> (<em>str</em>) – file “namespace:name”</p></li>
+<li><p><strong>fid</strong> (<em>str</em>) – file id</p></li>
+<li><p><strong>namespace</strong> (<em>str</em>) – file namespace</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – file name</p></li>
+<li><p><strong>retire</strong> (<em>bool</em>) – whether the file should be retired</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary with updated file information</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">search_named_queries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">query</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Run MQL query for named queries</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>query</strong> (<em>str</em>) – Query in MQL</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The list contains one dictionary per matching named query with the query information.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list of dicts</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">update_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'update'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frozen</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">monotonic</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Update dataset. Requires client authentication.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset</strong> (<em>str</em>) – “namespace:name”</p></li>
+<li><p><strong>metadata</strong> (<em>dict</em><em> or </em><em>None</em>) – New metadata values, or, if None, leave the metadata unchanged</p></li>
+<li><p><strong>mode</strong> (<em>str</em>) – Either <code class="docutils literal notranslate"><span class="pre">&quot;update&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;replace&quot;</span></code>. If <code class="docutils literal notranslate"><span class="pre">&quot;update&quot;</span></code>, metadata will be updated with new values. If <code class="docutils literal notranslate"><span class="pre">&quot;replace&quot;</span></code>,
+metadata will be replaced with new values.
+If <code class="docutils literal notranslate"><span class="pre">metadata</span></code> is None, <code class="docutils literal notranslate"><span class="pre">mode</span></code> is ignored</p></li>
+<li><p><strong>frozen</strong> (<em>boolean</em><em> or </em><em>None</em>) – if boolean, new value for the flag. If None, leave it unchanged</p></li>
+<li><p><strong>monotonic</strong> (<em>boolean</em><em> or </em><em>None</em>) – if boolean, new value for the flag. If None, leave it unchanged</p></li>
+<li><p><strong>description</strong> (<em>str</em><em> or </em><em>None</em>) – if str, new dataset description. If None, leave the description unchanged</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>dictionary with new dataset information</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">update_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">did</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checksums</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parents</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">children</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metadata</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>did</strong> (<em>str</em>) – file “namespace:name”</p></li>
+<li><p><strong>fid</strong> (<em>str</em>) – file id</p></li>
+<li><p><strong>namespace</strong> (<em>str</em>) – file namespace</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – file name</p></li>
+<li><p><strong>replace</strong> (<em>bool</em>) – If True, the specified attribute values will be replaced with new values.
+Otherwise added (for parents and children) and updated (for checksums and metadata)</p></li>
+<li><p><strong>size</strong> (<em>int &gt;= 0</em>) – file size, optional</p></li>
+<li><p><strong>checksums</strong> (<em>dict</em>) – checksum values, optional</p></li>
+<li><p><strong>parents</strong> (<em>list</em>) – list of parent file ids, optional</p></li>
+<li><p><strong>children</strong> (<em>list</em>) – list of child file ids, optional</p></li>
+<li><p><strong>metadata</strong> (<em>dict</em>) – dictionary with metadata to update or replace, optional</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dictionary with updated file information</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">update_file_meta</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metadata</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">files</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">names</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">namespace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dids</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mode</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'update'</span></span></em><span class="sig-paren">)</span></dt>
+<dd><p>Updates metadata for existing files. Requires client authentication.</p>
+<p><strong>DEPRECATED</strong> <em>update_file() should be used instead</em></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>metadata</strong> (<em>dict</em>) – see Notes</p></li>
+<li><p><strong>files</strong> (<em>list</em><em> of </em><em>dicts</em>) – Each dict specifies a file. See Notes</p></li>
+<li><p><strong>names</strong> (<em>list</em><em> of </em><em>strings</em>) – List of file names. Requires namespace to be specified</p></li>
+<li><p><strong>dids</strong> (<em>list</em><em> of </em><em>strings</em>) – List of DIDs (“namespace:name”) strings</p></li>
+<li><p><strong>fids</strong> (<em>list</em><em> of </em><em>strings</em>) – List of file ids. The list of files can be specified with <code class="docutils literal notranslate"><span class="pre">fids</span></code> or with <code class="docutils literal notranslate"><span class="pre">names</span></code> argument, but not
+both.</p></li>
+<li><p><strong>namespace</strong> (<em>string</em>) – Default namespace</p></li>
+<li><p><strong>mode</strong> (<em>str</em>) – Either <code class="docutils literal notranslate"><span class="pre">&quot;update&quot;</span></code> (default) or <code class="docutils literal notranslate"><span class="pre">&quot;replace&quot;</span></code>. If mode is <code class="docutils literal notranslate"><span class="pre">&quot;update&quot;</span></code>, existing metadata will be updated with
+values in <code class="docutils literal notranslate"><span class="pre">metadata</span></code>. If <code class="docutils literal notranslate"><span class="pre">&quot;replace&quot;</span></code>, then new values will replace existing metadata. Also, see notes below.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>list of dictionaries, one dictionary per file with file ids: { “fid”: “…” }</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This method can be be used to apply common metadata changes to a list of files. This method <strong>can not</strong> be used to update
+file provenance information.</p>
+<p>The``metadata`` argument is used to specify the common changes to the metadata to apply to multiple files.
+The <code class="docutils literal notranslate"><span class="pre">metadata</span></code> dictionary will be used to either update existing metadata of listed files (if <code class="docutils literal notranslate"><span class="pre">mode=&quot;update&quot;</span></code>) or
+replace it (if <code class="docutils literal notranslate"><span class="pre">mode=&quot;replace&quot;</span></code>).</p>
+<p>Files to update have to be specified in one of the following ways:</p>
+<blockquote>
+<div><ul>
+<li><p>files = [list of dicts] - each dict must be in one of the following formats:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>{“fid”:”&lt;file id&gt;”}</p></li>
+<li><p>{“namespace”:”&lt;file namespace&gt;”, “name”:”&lt;file name&gt;”} - namespace is optional. Default: the value of the “namespace” method argument</p></li>
+<li><p>{“did”:”&lt;file namespace&gt;:&lt;file name&gt;”}</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>dids = [list of file DIDs]</p></li>
+<li><p>names = [list of file names] - “namespace” argument method must be used to specify the common namespace</p></li>
+<li><p>fids = [list of file ids]</p></li>
+</ul>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">wait_queries</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span></dt>
+<dd><p>Wait for all issued asynchronous queries to complete</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/hide/api.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Data Dispatcher  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">API</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2022, Igor Mandrichenko.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>

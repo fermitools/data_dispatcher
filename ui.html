@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+
+<html lang="en" data-content_root="./">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Data Dispatcher User Interface &#8212; Data Dispatcher  documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="_static/nature.css?v=279e0f84" />
+    <script src="_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Python API" href="webapi.html" />
+    <link rel="prev" title="Data Dispatcher Client Installation and Configuration" href="install.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="webapi.html" title="Python API"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="install.html" title="Data Dispatcher Client Installation and Configuration"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Data Dispatcher  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Data Dispatcher User Interface</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="data-dispatcher-user-interface">
+<h1>Data Dispatcher User Interface<a class="headerlink" href="#data-dispatcher-user-interface" title="Link to this heading">¶</a></h1>
+<section id="setting-up-the-environment">
+<h2>Setting up the environment<a class="headerlink" href="#setting-up-the-environment" title="Link to this heading">¶</a></h2>
+<p>After installing the Data Dispatcher client, you will need to define the following environment variables:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>DATA_DISPATCHER_URL - URL for Data Dispatcher data server</p></li>
+<li><p>DATA_DISPATCHER_AUTH_URL - URL for Data Dispatcher authentication server</p></li>
+<li><p>METACAT_SERVER_URL - URL for MetaCat data srever</p></li>
+</ul>
+</div></blockquote>
+</section>
+<section id="data-dispatcher-commands">
+<h2>Data Dispatcher Commands<a class="headerlink" href="#data-dispatcher-commands" title="Link to this heading">¶</a></h2>
+<section id="logging-in">
+<h3>Logging in<a class="headerlink" href="#logging-in" title="Link to this heading">¶</a></h3>
+<p>Before using Data Dispatcher UI, the user needs to log in. Logging in essentially means obtaining an authentication/authorization token from
+the token issuer and storing it in local file system for use by the Data Dispatcher UI commands.</p>
+<p>Currently, Data Dispatcher supports 3 modes of authentication:</p>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>ddisp<span class="w"> </span>login<span class="w"> </span>-m<span class="w"> </span>password<span class="w"> </span>&lt;username&gt;<span class="w">                                  </span><span class="c1"># login using LDAP password</span>
+Password:<span class="w"> </span>...
+
+$<span class="w"> </span>ddisp<span class="w"> </span>login<span class="w"> </span>-m<span class="w"> </span>x509<span class="w"> </span>&lt;username&gt;<span class="w"> </span>&lt;cert_file.pem&gt;<span class="w"> </span>&lt;key_file.pem&gt;<span class="w">       </span><span class="c1"># login using X.509 authentication</span>
+$<span class="w"> </span>ddisp<span class="w"> </span>login<span class="w"> </span>-m<span class="w"> </span>x509<span class="w"> </span>&lt;username&gt;<span class="w"> </span>&lt;proxy_file&gt;
+
+$<span class="w"> </span>ddisp<span class="w"> </span>login<span class="w"> </span>-m<span class="w"> </span>token<span class="w"> </span><span class="o">[</span>-t<span class="w"> </span><span class="o">(</span>&lt;token&gt;<span class="p">|</span>&lt;token<span class="w"> </span>file&gt;<span class="o">)]</span><span class="w"> </span>&lt;username&gt;<span class="w">         </span><span class="c1"># login using WLCG token</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>If WLCG token authentication is used, the token or a file with the token can be specified with <code class="docutils literal notranslate"><span class="pre">-t</span></code> option.
+Otherwise, the command will look for the token in:</p>
+<blockquote>
+<div><ol class="arabic">
+<li><p><code class="docutils literal notranslate"><span class="pre">BEARER_TOKEN</span></code> environment variable value</p></li>
+<li><p>contents of a file pointed to by the <code class="docutils literal notranslate"><span class="pre">BEARER_TOKEN_FILE</span></code> environment variable</p></li>
+<li><p>if <code class="docutils literal notranslate"><span class="pre">XDG_RUNTIME_DIR</span></code> environment variable is defined:</p>
+<blockquote>
+<div><ol class="arabic">
+<li><p>if ID environment variable is defined, contents of the file <code class="docutils literal notranslate"><span class="pre">$XDG_RUNTIME_DIR/bt_u$ID</span></code></p></li>
+<li><p>if ID is not defined, contents of the file:</p>
+<blockquote>
+<div><p><code class="docutils literal notranslate"><span class="pre">$XDG_RUNTIME_DIR/bt_u&lt;effective</span> <span class="pre">uid</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">process&gt;</span></code></p>
+</div></blockquote>
+</li>
+</ol>
+</div></blockquote>
+</li>
+</ol>
+</div></blockquote>
+</section>
+<section id="software-versions">
+<h3>Software versions<a class="headerlink" href="#software-versions" title="Link to this heading">¶</a></h3>
+<p>To print client and server versions, use the version command:</p>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>ddisp<span class="w"> </span>version
+Server<span class="w"> </span>URL:<span class="w">     </span>http://host.domain:8080/dd/data
+Server<span class="w"> </span>version:<span class="w"> </span><span class="m">1</span>.3.2
+Client<span class="w"> </span>version:<span class="w"> </span><span class="m">1</span>.3.1
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+<section id="projects">
+<h3>Projects<a class="headerlink" href="#projects" title="Link to this heading">¶</a></h3>
+<section id="creating-project">
+<h4>Creating project<a class="headerlink" href="#creating-project" title="Link to this heading">¶</a></h4>
+<p>A Data Dispatcher project is a collection of files to process. There are three ways to provide the list of files to process.
+One is to specify a MetaCat query and create the project from the resulting file set:</p>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>ddisp<span class="w"> </span>project<span class="w"> </span>create<span class="w"> </span>&lt;inline<span class="w"> </span>MetaCat<span class="w"> </span>query&gt;
+
+<span class="c1"># Examples:</span>
+$<span class="w"> </span>ddisp<span class="w"> </span>project<span class="w"> </span>create<span class="w"> </span>files<span class="w"> </span>from<span class="w"> </span>dune:all<span class="w"> </span>limit<span class="w"> </span><span class="m">100</span>
+$<span class="w"> </span>ddisp<span class="w"> </span>project<span class="w"> </span>create<span class="w"> </span>files<span class="w"> </span>from<span class="w"> </span>dune:all<span class="w"> </span>where<span class="w"> </span><span class="s1">&#39;namespace=&quot;protodune-sp&quot;&#39;</span><span class="w"> </span>skip<span class="w"> </span><span class="m">3000</span><span class="w"> </span>limit<span class="w"> </span><span class="m">10</span>
+
+$<span class="w"> </span>ddisp<span class="w"> </span>project<span class="w"> </span>create<span class="w"> </span>-q<span class="w"> </span>&lt;file<span class="w"> </span>with<span class="w"> </span>MetaCat<span class="w"> </span>MQL<span class="w"> </span>query&gt;
+</pre></div>
+</div>
+</div></blockquote>
+<p>A project can be created with explicit list of files, specified as a text file with list of DIDs (namespace:name), one
+DID per line:</p>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>cat<span class="w"> </span>&gt;<span class="w"> </span>file_list<span class="w"> </span><span class="s">&lt;&lt; _EOF_</span>
+<span class="s">protodune-sp:np04_raw_run006833_0001_dl10.root</span>
+<span class="s">protodune-sp:np04_raw_run006833_0001_dl1.root</span>
+<span class="s">protodune-sp:np04_raw_run006833_0001_dl6.root</span>
+<span class="s">_EOF_</span>
+$<span class="w"> </span>ddisp<span class="w"> </span>project<span class="w"> </span>create<span class="w"> </span>-l<span class="w"> </span>file_list
+</pre></div>
+</div>
+</div></blockquote>
+<p>Third way is to use JSON-formatted file list. The list is composed of items of one of two types:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>file DID as string</p></li>
+<li><p>a dictionary with keys “namespace”, “name” and optional “attributes”:</p></li>
+</ul>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>cat<span class="w"> </span>/tmp/file_list.json
+<span class="o">[</span>
+<span class="w">    </span><span class="s2">&quot;protodune-sp:np04_raw_run006834_0009_dl2.root&quot;</span>,
+<span class="w">    </span><span class="o">{</span>
+<span class="w">        </span><span class="s2">&quot;namespace&quot;</span>:<span class="s2">&quot;protodune-sp&quot;</span>,
+<span class="w">        </span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;np04_raw_run006834_0009_dl6.root&quot;</span>
+<span class="w">    </span><span class="o">}</span>,
+<span class="w">    </span><span class="o">{</span>
+<span class="w">        </span><span class="s2">&quot;namespace&quot;</span>:<span class="w">  </span><span class="s2">&quot;protodune-sp&quot;</span>,
+<span class="w">        </span><span class="s2">&quot;name&quot;</span>:<span class="w">       </span><span class="s2">&quot;np04_raw_run006834_0010_dl10.root&quot;</span>,
+<span class="w">        </span><span class="s2">&quot;attributes&quot;</span>:<span class="w"> </span><span class="o">{</span><span class="s2">&quot;debug&quot;</span>:true<span class="o">}</span>
+<span class="w">    </span><span class="o">}</span>
+<span class="o">]</span>
+$<span class="w"> </span>ddisp<span class="w"> </span>project<span class="w"> </span>create<span class="w"> </span>-j<span class="w"> </span>/tmp/file_list.json
+</pre></div>
+</div>
+</div></blockquote>
+<p>Hyphen can be used as the value for <code class="docutils literal notranslate"><span class="pre">-j</span></code> and <code class="docutils literal notranslate"><span class="pre">-l</span></code> options to read the list from stdin:</p>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>ddisp<span class="w"> </span>project<span class="w"> </span>create<span class="w"> </span>-l<span class="w"> </span>-<span class="w"> </span><span class="s">&lt;&lt; _EOF_</span>
+<span class="s">protodune-sp:np04_raw_run006833_0001_dl10.root</span>
+<span class="s">protodune-sp:np04_raw_run006833_0001_dl1.root</span>
+<span class="s">protodune-sp:np04_raw_run006833_0001_dl6.root</span>
+<span class="s">_EOF_</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Optionally, use <code class="docutils literal notranslate"><span class="pre">-t</span> <span class="pre">&lt;timeout</span> <span class="pre">in</span> <span class="pre">seconds&gt;</span></code> to specify the worker timeout. If a worker allocates a file and does not release it
+for longer than the specified time interval, Data Dispatcher will automatically release the file and make it available for
+another worker to allocate. Make sure the specified interval is long enough to avoid processing of the same file by multiple
+workers.
+There is a Data Dispatcher daemon running that checks these timeouts approx. every 2 seconds.</p>
+<p>The “ddisp project create” command prints information about the created project in 3 different formats, depending on
+the value of the <code class="docutils literal notranslate"><span class="pre">-p</span></code> option:</p>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>ddisp<span class="w"> </span>project<span class="w"> </span>create<span class="w"> </span>-p<span class="w"> </span>id<span class="w"> </span>...<span class="w">                   </span><span class="c1"># -p id is default</span>
+<span class="m">123</span><span class="w">                                             </span><span class="c1"># print the project id only</span>
+
+$<span class="w"> </span>ddisp<span class="w"> </span>project<span class="w"> </span>create<span class="w"> </span>-p<span class="w"> </span>json<span class="w"> </span>...<span class="w"> </span><span class="c1"># print project information as JSON</span>
+<span class="o">{</span>
+<span class="w">    </span><span class="s2">&quot;project_id&quot;</span>:<span class="w"> </span><span class="m">123</span>,
+<span class="w">    </span><span class="s2">&quot;file_handles&quot;</span>:<span class="w"> </span><span class="o">[</span>
+<span class="w">        </span>...
+<span class="w">    </span><span class="o">]</span>
+<span class="w">    </span>...
+<span class="o">}</span>
+
+$<span class="w"> </span>ddisp<span class="w"> </span>project<span class="w"> </span>create<span class="w"> </span>-p<span class="w"> </span>pprint<span class="w"> </span>...<span class="w"> </span><span class="c1"># print project information using Python pprint</span>
+<span class="o">{</span>
+<span class="w"> </span><span class="s1">&#39;project_id&#39;</span>:<span class="w"> </span><span class="m">123</span>,
+<span class="w"> </span><span class="s1">&#39;file_handles&#39;</span>:<span class="w"> </span><span class="o">[</span>
+<span class="w">    </span>...
+<span class="w"> </span><span class="o">]</span>
+<span class="w"> </span>...
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+<section id="project-time-outs">
+<h4>Project time-outs<a class="headerlink" href="#project-time-outs" title="Link to this heading">¶</a></h4>
+<p>There are 2 parameters which control the behavior of the Data Dispatcher with respect to idle projects: <em>worker timeout</em> and <em>project idle timeout</em>.</p>
+<p>Worker timeout parameter tells the Data Dispatcher that if a worker reserves a file and does not release it for too long, the Data Dispatcher will
+assume that the worker which holds the file has died witout releasing the file and the Data Dispatcher will
+release it and make available for another (or the same) worker to allocate. This parameter can be set using <code class="docutils literal notranslate"><span class="pre">-w</span></code> option when creating the project:</p>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>ddisp<span class="w"> </span>project<span class="w"> </span>create<span class="w"> </span>-w<span class="w"> </span><span class="o">(</span>&lt;worker<span class="w"> </span>timeout&gt;<span class="o">[</span>s<span class="p">|</span>m<span class="p">|</span>h<span class="p">|</span>d<span class="o">]</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>none<span class="o">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>The timeout value is numeric with optional suffix <code class="docutils literal notranslate"><span class="pre">s</span></code>, <code class="docutils literal notranslate"><span class="pre">m</span></code>, <code class="docutils literal notranslate"><span class="pre">h</span></code> or <code class="docutils literal notranslate"><span class="pre">d</span></code>. If a suffix is used, then the timeout is set to the specified
+number of seconds, minutes, hours or days respectively. <code class="docutils literal notranslate"><span class="pre">none</span></code> can be used to create a project without any worker timeout. Default worker timeout
+is 12 hours.</p>
+<p>Project idle timeout applies in the case, when a there is no worker file reserve/release activity for the project for the specified time interval.
+In this case, the Data Dispatcher moves the project into <code class="docutils literal notranslate"><span class="pre">abandoned</span></code> state. In this state, the Data Dispatcher stops updating file replica
+availability information for the project. Use <code class="docutils literal notranslate"><span class="pre">-t</span></code> option to specify this timeout:</p>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>ddisp<span class="w"> </span>project<span class="w"> </span>create<span class="w"> </span>-t<span class="w"> </span><span class="o">(</span>&lt;idle<span class="w"> </span>timeout&gt;<span class="o">[</span>s<span class="p">|</span>m<span class="p">|</span>h<span class="p">|</span>d<span class="o">]</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>none<span class="o">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>Default value for the project idle timeout is 72 hours.</p>
+<p>To reactivate an abandoned project, use <code class="docutils literal notranslate"><span class="pre">activate</span></code> subcommand:</p>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>ddisp<span class="w"> </span>project<span class="w"> </span>activate<span class="w"> </span>&lt;project<span class="w"> </span>id&gt;
+</pre></div>
+</div>
+</div></blockquote>
+<p>An abandoned project will also be re-activated if a worker releases or tries to reserve a file.</p>
+</section>
+<section id="project-and-file-metadata">
+<h4>Project and file metadata<a class="headerlink" href="#project-and-file-metadata" title="Link to this heading">¶</a></h4>
+<p>Data Dispatcher provides a way to pass some arbitrary metadata about the project as a whole and/or each individual project file to the worker.
+The metadata is attached to the project and/or project files at the time of the project creation. Project and file metadata can be any JSON dictionary.
+If the project is created using a MetaCat query, Data Dispatcher can copy portions of file metadata from MetaCat to avoid unnecessary
+querying MetaCat at the run time.
+When the worker asks for the next file to process, the Data Dispatcher responds with the file information, which includes the project and the
+file metadata.</p>
+<p>Note that the project file attributes defined at the project creation time do not get stored in MetaCat. Also, because file
+attributes are associated with project file handles instead of files, if two projects include the same
+file, they can define file attributes independently without interfering with each other.</p>
+<p>There are several ways to specify project level metadata attributes:</p>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># inline:</span>
+$<span class="w"> </span>ddisp<span class="w"> </span>project<span class="w"> </span>create<span class="w"> </span>-A<span class="w"> </span><span class="s2">&quot;email_errors=user@fnal.gov step=postprocess&quot;</span><span class="w"> </span>...
+
+<span class="c1"># as a JSON file:</span>
+$<span class="w"> </span>cat<span class="w"> </span>project_attrs.json
+<span class="o">{</span>
+<span class="w">    </span><span class="s2">&quot;email_errors&quot;</span>:<span class="w"> </span><span class="s2">&quot;user@fnal.gov&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;step&quot;</span>:<span class="w"> </span><span class="s2">&quot;postprocess&quot;</span>
+<span class="o">}</span>
+$<span class="w"> </span>ddisp<span class="w"> </span>project<span class="w"> </span>create<span class="w"> </span>-A<span class="w"> </span>@project_attrs.json
+</pre></div>
+</div>
+</div></blockquote>
+<p>To copy some metadata attributes from MetaCat:</p>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>ddisp<span class="w"> </span>project<span class="w"> </span>create<span class="w"> </span>-c<span class="w"> </span>core.runs<span class="w"> </span>files<span class="w"> </span>from<span class="w"> </span>...
+$<span class="w"> </span>ddisp<span class="w"> </span>project<span class="w"> </span>create<span class="w"> </span>-c<span class="w"> </span>detector.hv_value,core.data_tier<span class="w"> </span>files<span class="w"> </span>from<span class="w"> </span>...
+</pre></div>
+</div>
+</div></blockquote>
+<p>To associate common attributes with each file in the project, use <code class="docutils literal notranslate"><span class="pre">-a</span></code> option:</p>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>ddisp<span class="w"> </span>project<span class="w"> </span>create<span class="w"> </span>-a<span class="w"> </span><span class="s2">&quot;name1=value1 name2=value2&quot;</span><span class="w"> </span>...
+$<span class="w"> </span>ddisp<span class="w"> </span>project<span class="w"> </span>create<span class="w"> </span>-a<span class="w"> </span>@&lt;JSON<span class="w"> </span>file&gt;
+</pre></div>
+</div>
+</div></blockquote>
+<p>If the file list is specified explicitly using JSON file, then each file dictionary may optionally include file attributes:</p>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>cat<span class="w"> </span>/tmp/file_list.json
+<span class="o">[</span>
+<span class="w">    </span><span class="o">{</span><span class="w"> </span><span class="s2">&quot;namespace&quot;</span>:<span class="s2">&quot;protodune-sp&quot;</span>,<span class="w"> </span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;np04_raw_run006834_0009_dl2.root&quot;</span>,
+<span class="w">            </span><span class="s2">&quot;attributes&quot;</span>:<span class="w">   </span><span class="o">{</span><span class="w">   </span><span class="s2">&quot;pi&quot;</span>:3.14,<span class="w"> </span><span class="s2">&quot;debug&quot;</span>:true<span class="w"> </span><span class="o">}</span>
+<span class="w">    </span><span class="o">}</span>,
+<span class="w">    </span><span class="o">{</span><span class="w"> </span><span class="s2">&quot;namespace&quot;</span>:<span class="s2">&quot;protodune-sp&quot;</span>,<span class="w"> </span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;np04_raw_run006834_0009_dl6.root&quot;</span>,
+<span class="w">            </span><span class="s2">&quot;attributes&quot;</span>:<span class="w">   </span><span class="o">{</span><span class="w">   </span><span class="s2">&quot;skip_events&quot;</span>:<span class="w"> </span><span class="m">10</span><span class="w">   </span><span class="o">}</span>
+<span class="w">    </span><span class="o">}</span>,
+<span class="w">    </span><span class="o">{</span><span class="w"> </span><span class="s2">&quot;namespace&quot;</span>:<span class="s2">&quot;protodune-sp&quot;</span>,<span class="w"> </span><span class="s2">&quot;name&quot;</span>:<span class="s2">&quot;np04_raw_run006834_0010_dl10.root&quot;</span><span class="w"> </span><span class="o">}</span>
+<span class="o">]</span>
+$<span class="w"> </span>ddisp<span class="w"> </span>project<span class="w"> </span>create<span class="w"> </span>-j<span class="w"> </span>/tmp/file_list.json
+</pre></div>
+</div>
+</div></blockquote>
+<p>When the worker gets next file to process, the JSON representation of file information includes project and project file attributes:</p>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>ddisp<span class="w"> </span>worker<span class="w"> </span>next<span class="w"> </span>-j<span class="w"> </span><span class="m">70</span>
+<span class="o">{</span>
+<span class="w">  </span><span class="s2">&quot;attempts&quot;</span>:<span class="w"> </span><span class="m">1</span>,
+<span class="w">  </span><span class="s2">&quot;attributes&quot;</span>:<span class="w"> </span><span class="o">{</span><span class="w">                   </span><span class="c1"># file attributes</span>
+<span class="w">    </span><span class="s2">&quot;pi&quot;</span>:<span class="w"> </span><span class="m">3</span>.14,
+<span class="w">    </span><span class="s2">&quot;debug&quot;</span>:<span class="w"> </span>true,
+<span class="w">    </span><span class="s2">&quot;detector.hv_value&quot;</span>:<span class="w"> </span><span class="m">37</span>.7801,<span class="w">   </span><span class="c1"># copied from MetaCat</span>
+<span class="w">    </span><span class="s2">&quot;core.runs&quot;</span>:<span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="m">1789</span>,<span class="w"> </span><span class="m">1795</span><span class="w"> </span><span class="o">]</span>
+<span class="w">  </span><span class="o">}</span>,
+<span class="w">  </span><span class="s2">&quot;name&quot;</span>:<span class="w"> </span><span class="s2">&quot;np04_raw_run006834_0009_dl2.root&quot;</span>,
+<span class="w">  </span><span class="s2">&quot;namespace&quot;</span>:<span class="w"> </span><span class="s2">&quot;protodune-sp&quot;</span>,
+<span class="w">  </span><span class="s2">&quot;project_attributes&quot;</span>:<span class="w"> </span><span class="o">{</span><span class="w">           </span><span class="c1"># project attributes</span>
+<span class="w">    </span><span class="s2">&quot;email_errors&quot;</span>:<span class="w"> </span><span class="s2">&quot;user@fnal.gov&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;step&quot;</span>:<span class="w"> </span><span class="s2">&quot;postprocess&quot;</span>
+<span class="w">  </span><span class="o">}</span>,
+<span class="w">  </span><span class="s2">&quot;project_id&quot;</span>:<span class="w"> </span><span class="m">70</span>,
+<span class="w">  </span><span class="s2">&quot;replicas&quot;</span>:<span class="w"> </span><span class="o">[</span>
+<span class="w">    </span><span class="o">{</span>
+<span class="w">      </span><span class="s2">&quot;available&quot;</span>:<span class="w"> </span>true,
+<span class="w">      </span><span class="s2">&quot;name&quot;</span>:<span class="w"> </span><span class="s2">&quot;np04_raw_run006834_0009_dl2.root&quot;</span>,
+<span class="w">      </span><span class="s2">&quot;namespace&quot;</span>:<span class="w"> </span><span class="s2">&quot;protodune-sp&quot;</span>,
+<span class="w">      </span><span class="s2">&quot;path&quot;</span>:<span class="w"> </span><span class="s2">&quot;/pnfs/fnal.gov/usr/...&quot;</span>,
+<span class="w">      </span><span class="s2">&quot;preference&quot;</span>:<span class="w"> </span><span class="m">0</span>,
+<span class="w">      </span><span class="s2">&quot;rse&quot;</span>:<span class="w"> </span><span class="s2">&quot;FNAL_DCACHE&quot;</span>,
+<span class="w">      </span><span class="s2">&quot;rse_available&quot;</span>:<span class="w"> </span>true,
+<span class="w">      </span><span class="s2">&quot;url&quot;</span>:<span class="w"> </span><span class="s2">&quot;root://fndca1.fnal.gov:1094/pnfs/fnal.gov/usr/...&quot;</span>
+<span class="w">    </span><span class="o">}</span>
+<span class="w">  </span><span class="o">]</span>,
+<span class="w">  </span><span class="s2">&quot;state&quot;</span>:<span class="w"> </span><span class="s2">&quot;reserved&quot;</span>,
+<span class="w">  </span><span class="s2">&quot;worker_id&quot;</span>:<span class="w"> </span><span class="s2">&quot;fnpc123_pid4563&quot;</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+<section id="special-project-attributes">
+<h4>Special project attributes<a class="headerlink" href="#special-project-attributes" title="Link to this heading">¶</a></h4>
+<p>There are a couple of special project attributes that cause different behavior in data dispatcher.</p>
+<p>Setting <em>virtual=True</em> will prevent data dispatcher from looking for the files in rucio. The default is False.</p>
+<p>Setting <em>retry_on_timeout=False</em> will cause the project’s files that timed out to go to the failed state instead of back to the initial state. The default is True.</p>
+</section>
+<section id="project-ownership-and-use-authorization">
+<h4>Project ownership and use authorization<a class="headerlink" href="#project-ownership-and-use-authorization" title="Link to this heading">¶</a></h4>
+<p>A project is owned by the user who created the project. By default, only the project owner and an admin users are authorized to
+use the project worker interface - reserve files, report their processing status. If necessary, at the
+time of the project creation, additional authorized users or roles can be specified:</p>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>ddisp<span class="w"> </span>project<span class="w"> </span>create<span class="w"> </span>-u<span class="w"> </span>alice,bob,charlie<span class="w"> </span>...
+$<span class="w"> </span>ddisp<span class="w"> </span>project<span class="w"> </span>create<span class="w"> </span>-r<span class="w"> </span>production,my_group<span class="w"> </span>...
+$<span class="w"> </span>ddisp<span class="w"> </span>project<span class="w"> </span>create<span class="w"> </span>-u<span class="w"> </span>alice,bob<span class="w"> </span>-r<span class="w"> </span>my_group<span class="w"> </span>...
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+<section id="project-states">
+<h4>Project states<a class="headerlink" href="#project-states" title="Link to this heading">¶</a></h4>
+<p>There are five different states that a data dispatcher project can be in: active, done, failed, cancelled, or abandoned.</p>
+<p>A project is in the <em>active</em> state when there are still files to be processed and it hasn’t reached the idle_timeout.</p>
+<p>A project is in the <em>done</em> state when all of its files have been processed successfully.</p>
+<p>A project is in the <em>failed</em> state when all of its files have finished processing and at least one has failed permanently.</p>
+<p>A project is in the <em>cancelled</em> state when it has been cancelled by the user.</p>
+<p>A project is in the <em>abandoned</em> state after the project is idle for longer than the idle_timeout. It can be activated again.</p>
+</section>
+<section id="listing-projects">
+<h4>Listing projects<a class="headerlink" href="#listing-projects" title="Link to this heading">¶</a></h4>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>ddisp<span class="w"> </span>project<span class="w"> </span>list
+<span class="w">    </span>-j<span class="w">                                              </span>-<span class="w"> </span>JSON<span class="w"> </span>output
+<span class="w">    </span>-u<span class="w"> </span>&lt;owner&gt;<span class="w">                                      </span>-<span class="w"> </span>filter<span class="w"> </span>by<span class="w"> </span>project<span class="w"> </span>owner
+<span class="w">        </span>all<span class="w">         </span>-<span class="w"> </span>list<span class="w"> </span>projects<span class="w"> </span>from<span class="w"> </span>all<span class="w"> </span>users
+<span class="w">        </span>username<span class="w">    </span>-<span class="w"> </span>list<span class="w"> </span>projects<span class="w"> </span>from<span class="w"> </span>username
+<span class="w">    </span>-s<span class="w"> </span>&lt;state&gt;<span class="w">                                  </span>-<span class="w"> </span>filter<span class="w"> </span>by<span class="w"> </span>state,<span class="w"> </span>default:<span class="w"> </span>active<span class="w"> </span>projects<span class="w"> </span>only
+<span class="w">        </span>all<span class="w">        </span>-<span class="w"> </span>all<span class="w"> </span>projects
+<span class="w">        </span>active<span class="w">     </span>-<span class="w"> </span>active<span class="w"> </span>projects<span class="w"> </span>only
+<span class="w">        </span><span class="k">done</span><span class="w">       </span>-<span class="w"> </span>projects<span class="w"> </span>that<span class="w"> </span>are<span class="w"> </span>marked<span class="w"> </span><span class="k">done</span>
+<span class="w">        </span>failed<span class="w">     </span>-<span class="w"> </span>projects<span class="w"> </span>that<span class="w"> </span>are<span class="w"> </span>marked<span class="w"> </span>failed
+<span class="w">        </span>cancelled<span class="w">  </span>-<span class="w"> </span>projects<span class="w"> </span>that<span class="w"> </span>have<span class="w"> </span>been<span class="w"> </span>cancelled
+<span class="w">        </span>abandoned<span class="w">  </span>-<span class="w"> </span>projects<span class="w"> </span>that<span class="w"> </span>have<span class="w"> </span>timed<span class="w"> </span>out
+<span class="w">    </span>-n<span class="w"> </span>&lt;not_state&gt;<span class="w">                              </span>-<span class="w"> </span>filter<span class="w"> </span>out<span class="w"> </span>by<span class="w"> </span>state,<span class="w"> </span>default:<span class="w"> </span>abandoned<span class="w"> </span>projects
+<span class="w">    </span>-a<span class="w"> </span><span class="s2">&quot;name1=value1 name2=value2 ...&quot;</span><span class="w">          </span>-<span class="w"> </span>filter<span class="w"> </span>by<span class="w"> </span>project<span class="w"> </span>attributes
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+<section id="viewing-projects">
+<h4>Viewing projects<a class="headerlink" href="#viewing-projects" title="Link to this heading">¶</a></h4>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>ddisp<span class="w"> </span>project<span class="w"> </span>show<span class="w"> </span><span class="o">[</span>options<span class="o">]</span><span class="w"> </span>&lt;project_id&gt;<span class="w">            </span>-<span class="w"> </span>show<span class="w"> </span>project<span class="w"> </span>info<span class="w"> </span><span class="o">(</span>-j<span class="w"> </span>show<span class="w"> </span>as<span class="w"> </span>JSON<span class="o">)</span>
+<span class="w">        </span>-a<span class="w">                                          </span>-<span class="w"> </span>show<span class="w"> </span>project<span class="w"> </span>attributes<span class="w"> </span>only
+<span class="w">        </span>-r<span class="w">                                          </span>-<span class="w"> </span>show<span class="w"> </span>replicas<span class="w"> </span>information
+<span class="w">        </span>-j<span class="w">                                          </span>-<span class="w"> </span>show<span class="w"> </span>as<span class="w"> </span>JSON
+<span class="w">        </span>-f<span class="w"> </span><span class="o">[</span>all<span class="p">|</span>initial<span class="p">|</span>reserved<span class="p">|</span>failed<span class="p">|</span><span class="k">done</span><span class="o">]</span><span class="w">    </span>-<span class="w"> </span>list<span class="w"> </span>files<span class="w"> </span><span class="o">(</span>namespace:name<span class="o">)</span><span class="w"> </span>only
+<span class="w">           </span>all<span class="w">       </span>-<span class="w"> </span>all<span class="w"> </span>files
+<span class="w">           </span>initial<span class="w">   </span>-<span class="w"> </span>initial<span class="w"> </span>files<span class="w"> </span>only
+<span class="w">           </span>reserved<span class="w">  </span>-<span class="w"> </span>reserved<span class="w"> </span>files<span class="w"> </span>only
+<span class="w">           </span>failed<span class="w">    </span>-<span class="w"> </span>failed<span class="w"> </span>files<span class="w"> </span>only
+<span class="w">           </span><span class="k">done</span><span class="w">      </span>-<span class="w"> </span><span class="k">done</span><span class="w"> </span>files<span class="w"> </span>only
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+<section id="searching-projects">
+<h4>Searching projects<a class="headerlink" href="#searching-projects" title="Link to this heading">¶</a></h4>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>ddisp<span class="w"> </span>project<span class="w"> </span>search<span class="w"> </span><span class="o">[</span>options<span class="o">]</span><span class="w"> </span>-q<span class="w"> </span>-<span class="w">              </span>-<span class="w"> </span><span class="nb">read</span><span class="w"> </span>search<span class="w"> </span>query<span class="w"> </span>from<span class="w"> </span>stdin
+$<span class="w"> </span>ddisp<span class="w"> </span>project<span class="w"> </span>search<span class="w"> </span><span class="o">[</span>options<span class="o">]</span><span class="w"> </span>-q<span class="w"> </span>&lt;file<span class="w"> </span>path&gt;<span class="w">    </span>-<span class="w"> </span><span class="nb">read</span><span class="w"> </span>search<span class="w"> </span>query<span class="w"> </span>from<span class="w"> </span>a<span class="w"> </span>file
+$<span class="w"> </span>ddisp<span class="w"> </span>project<span class="w"> </span>search<span class="w"> </span><span class="o">[</span>options<span class="o">]</span><span class="w"> </span>&lt;search<span class="w"> </span>query&gt;<span class="w">    </span>-<span class="w"> </span>inline<span class="w"> </span>search<span class="w"> </span>query
+
+Options:
+<span class="w">    </span>-j<span class="w">                                          </span>-<span class="w"> </span>JSON<span class="w"> </span>output
+<span class="w">    </span>-u<span class="w"> </span>&lt;owner&gt;<span class="w">                                  </span>-<span class="w"> </span>filter<span class="w"> </span>by<span class="w"> </span>owner
+<span class="w">    </span>-s<span class="w"> </span><span class="o">(</span>&lt;state&gt;<span class="p">|</span>all<span class="o">)</span><span class="w">                            </span>-<span class="w"> </span>filter<span class="w"> </span>by<span class="w"> </span>state,<span class="w"> </span>default:<span class="w"> </span>active<span class="w"> </span>projects<span class="w"> </span>only
+</pre></div>
+</div>
+</div></blockquote>
+<p>See <a class="reference internal" href="project_query.html#searchql"><span class="std std-ref">Searching Projects</span></a> for details on search query language</p>
+</section>
+<section id="copying-projects">
+<h4>Copying projects<a class="headerlink" href="#copying-projects" title="Link to this heading">¶</a></h4>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>ddisp<span class="w"> </span>project<span class="w"> </span>copy<span class="w"> </span><span class="o">[</span>options<span class="o">]</span><span class="w"> </span>&lt;project<span class="w"> </span>id&gt;<span class="w">               </span>--<span class="w"> </span>copy<span class="w"> </span>project
+
+<span class="w">  </span>-A<span class="w"> </span>@&lt;file.json&gt;<span class="w">                                 </span>-<span class="w"> </span>JSON<span class="w"> </span>file<span class="w"> </span>with<span class="w"> </span>project<span class="w"> </span>attributes<span class="w"> </span>to<span class="w"> </span>override
+<span class="w">  </span>-A<span class="w"> </span><span class="s2">&quot;name=value name=value ...&quot;</span><span class="w">                  </span>-<span class="w"> </span>project<span class="w"> </span>attributes<span class="w"> </span>to<span class="w"> </span>override
+<span class="w">  </span>-a<span class="w"> </span>@&lt;file.json&gt;<span class="w">                                 </span>-<span class="w"> </span>JSON<span class="w"> </span>file<span class="w"> </span>with<span class="w"> </span>file<span class="w"> </span>attributes<span class="w"> </span>to<span class="w"> </span>override
+<span class="w">  </span>-a<span class="w"> </span><span class="s2">&quot;name=value name=value ...&quot;</span><span class="w">                  </span>-<span class="w"> </span>file<span class="w"> </span>attributes<span class="w"> </span>to<span class="w"> </span>override
+
+<span class="w">  </span>-w<span class="w"> </span><span class="o">(</span>&lt;worker<span class="w"> </span>timeout&gt;<span class="o">[</span>s<span class="p">|</span>m<span class="p">|</span>h<span class="p">|</span>d<span class="o">]</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>none<span class="o">)</span><span class="w">           </span>-<span class="w"> </span>worker<span class="w"> </span>timeout<span class="w"> </span>to<span class="w"> </span>override
+<span class="w">  </span>-t<span class="w"> </span><span class="o">(</span>&lt;idle<span class="w"> </span>timeout&gt;<span class="o">[</span>s<span class="p">|</span>m<span class="p">|</span>h<span class="p">|</span>d<span class="o">]</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>none<span class="o">)</span><span class="w">             </span>-<span class="w"> </span>idle<span class="w"> </span>timeout<span class="w"> </span>to<span class="w"> </span>override
+
+<span class="w">  </span>-p<span class="w"> </span><span class="o">(</span>json<span class="p">|</span>pprint<span class="p">|</span>id<span class="o">)</span><span class="w">                             </span>-<span class="w"> </span>print<span class="w"> </span>created<span class="w"> </span>project<span class="w"> </span>info<span class="w"> </span>as<span class="w"> </span>JSON,
+<span class="w">                                                    </span>pprint<span class="w"> </span>or<span class="w"> </span>just<span class="w"> </span>project<span class="w"> </span>id<span class="w"> </span><span class="o">(</span>default<span class="o">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>This command allows the user to create a new project with the same files as an existing one. The project and file attributes
+can be copied to the new project or overriden.</p>
+</section>
+<section id="restarting-files-in-a-project">
+<h4>Restarting files in a project<a class="headerlink" href="#restarting-files-in-a-project" title="Link to this heading">¶</a></h4>
+<p>There are 2 ways to reset some files of the project to the initial state, making them available for re-processing within the same
+project.</p>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>ddisp<span class="w"> </span>project<span class="w"> </span>restart<span class="w"> </span>&lt;project_id&gt;<span class="w"> </span>&lt;did&gt;<span class="w"> </span>...
+</pre></div>
+</div>
+</div></blockquote>
+<p>This command will reset the state of the files specified with their DIDs regardless of their current state.</p>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>ddisp<span class="w"> </span>restart<span class="w"> </span><span class="o">[</span>options<span class="o">]</span><span class="w"> </span>&lt;project_id&gt;
+<span class="w">      </span>-f<span class="w">                                              </span>-<span class="w"> </span>restart<span class="w"> </span>failed<span class="w"> </span>files
+<span class="w">      </span>-d<span class="w">                                              </span>-<span class="w"> </span>restart<span class="w"> </span><span class="k">done</span><span class="w"> </span>files
+<span class="w">      </span>-r<span class="w">                                              </span>-<span class="w"> </span>unreserve<span class="w"> </span>reserved<span class="w"> </span>files
+<span class="w">      </span>-a<span class="w">                                              </span>-<span class="w"> </span>restart<span class="w"> </span>all<span class="w"> </span>files
+</pre></div>
+</div>
+</div></blockquote>
+<p>This command will reset all the files in the project in given set or states. Options <code class="docutils literal notranslate"><span class="pre">-f</span></code>, <code class="docutils literal notranslate"><span class="pre">-r</span></code>, <code class="docutils literal notranslate"><span class="pre">-d</span></code> can be combined.
+<code class="docutils literal notranslate"><span class="pre">-a</span></code> will reset all files in the project.</p>
+</section>
+<section id="cancelling-project">
+<h4>Cancelling project<a class="headerlink" href="#cancelling-project" title="Link to this heading">¶</a></h4>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>ddisp<span class="w"> </span>project<span class="w"> </span>cancel<span class="w"> </span><span class="o">[</span>-j<span class="o">]</span><span class="w"> </span>&lt;project<span class="w"> </span>id&gt;
+</pre></div>
+</div>
+</div></blockquote>
+<p><code class="docutils literal notranslate"><span class="pre">-j</span></code> will print the project information in JSON format</p>
+</section>
+<section id="deleting-project">
+<h4>Deleting project<a class="headerlink" href="#deleting-project" title="Link to this heading">¶</a></h4>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>ddisp<span class="w"> </span>project<span class="w"> </span>delete<span class="w"> </span>&lt;project<span class="w"> </span>id&gt;
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+</section>
+<section id="files">
+<h3>Files<a class="headerlink" href="#files" title="Link to this heading">¶</a></h3>
+<p>The following commands are used to show information about the files in a project.</p>
+<section id="viewing-files">
+<h4>Viewing files<a class="headerlink" href="#viewing-files" title="Link to this heading">¶</a></h4>
+<p>This command will show information about a file in a project, including the file state, worker id, number of attempts, and replica information.</p>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>ddisp<span class="w"> </span>file<span class="w"> </span>show<span class="w"> </span><span class="o">[</span>-j<span class="o">]</span><span class="w"> </span>&lt;project_id&gt;<span class="w"> </span>&lt;file<span class="w"> </span>DID&gt;
+<span class="w">          </span>-j<span class="w">                  </span>--<span class="w"> </span>JSON<span class="w"> </span>output
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+<section id="listing-files">
+<h4>Listing files<a class="headerlink" href="#listing-files" title="Link to this heading">¶</a></h4>
+<p>This command will list all the files in a project and show some information about them.</p>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>ddisp<span class="w"> </span>file<span class="w"> </span>list<span class="w"> </span><span class="o">[</span>options<span class="o">]</span><span class="w"> </span>&lt;project<span class="w"> </span>id&gt;
+<span class="w">          </span>-j<span class="w">                  </span>--<span class="w"> </span>JSON<span class="w"> </span>output
+<span class="w">          </span>-s<span class="w"> </span>&lt;handle<span class="w"> </span>state&gt;<span class="w">   </span>--<span class="w"> </span>list<span class="w"> </span>handles<span class="w"> </span><span class="k">in</span><span class="w"> </span>state
+<span class="w">          </span>-r<span class="w"> </span>&lt;rse&gt;<span class="w">            </span>--<span class="w"> </span>list<span class="w"> </span>handles<span class="w"> </span>with<span class="w"> </span>replicas<span class="w"> </span><span class="k">in</span><span class="w"> </span>RSE
+</pre></div>
+</div>
+</div></blockquote>
+<p>An example of the output from this command is below. For each file, it shows the state, number of attempts, number of times it timed out, the associated worker, and replica information. For the replicas, it shows the (number of available replicas)/(total replicas). A file is considered to be available if it can be found in the RSE and is prestaged.</p>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="w">  </span>Status<span class="w"> </span>Available<span class="w">  </span>Replicas<span class="w"> </span>Attempts<span class="w"> </span>Timeouts<span class="w"> </span>Worker<span class="w">    </span>File
+--------<span class="w"> </span>---------<span class="w"> </span>---------<span class="w"> </span>--------<span class="w"> </span>--------<span class="w"> </span>--------<span class="w"> </span>------------
+<span class="w"> </span>initial<span class="w">       </span>yes<span class="w">    </span><span class="m">1</span>/1<span class="w">           </span><span class="m">0</span><span class="w">        </span><span class="m">0</span><span class="w">          </span>example:b.fcl
+<span class="w"> </span>initial<span class="w">       </span>yes<span class="w">    </span><span class="m">1</span>/1<span class="w">           </span><span class="m">0</span><span class="w">        </span><span class="m">0</span><span class="w">          </span>example:c.fcl
+<span class="w"> </span>initial<span class="w">       </span>yes<span class="w">    </span><span class="m">1</span>/1<span class="w">           </span><span class="m">0</span><span class="w">        </span><span class="m">0</span><span class="w">          </span>example:d.fcl
+<span class="w"> </span>initial<span class="w">       </span>yes<span class="w">    </span><span class="m">1</span>/1<span class="w">           </span><span class="m">1</span><span class="w">        </span><span class="m">1</span><span class="w">          </span>example:e.fcl
+reserved<span class="w">       </span>yes<span class="w">    </span><span class="m">1</span>/1<span class="w">           </span><span class="m">1</span><span class="w">        </span><span class="m">0</span><span class="w"> </span>635c17c6<span class="w"> </span>example:a.fcl
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+<section id="file-states">
+<h4>File states<a class="headerlink" href="#file-states" title="Link to this heading">¶</a></h4>
+<p>There are four different states that a file can be in: initial, reserved, done, and failed.</p>
+<p>A file is in the <em>initial</em> state when it has been assigned to a project.</p>
+<p>A file is in the <em>reserved</em> state when it has been assigned a worker.</p>
+<p>A file is in the <em>done</em> state when the worker successfully processed the file.</p>
+<p>A file is in the <em>failed</em> state when the worker failed to process the file.</p>
+</section>
+</section>
+<section id="data-processing-workflow-worker-side">
+<h3>Data Processing Workflow (worker side)<a class="headerlink" href="#data-processing-workflow-worker-side" title="Link to this heading">¶</a></h3>
+<p>The following commands are used by the worker process. The worker is assumed to know the id of the project it is working on.</p>
+<section id="setting-worker-id">
+<h4>Setting worker id<a class="headerlink" href="#setting-worker-id" title="Link to this heading">¶</a></h4>
+<p>Each worker is identified by a unique worker id.
+Data Dispatcher does not use the worker id in any way other than to inform the user which file is reserved by which worker.
+That is why the Data Dispatcher does not maintain the list of worker ids nor does it ensure their uniqueness.
+It is the responsibility of the worker to choose a unique worker id, which has some meaning for the user.</p>
+<p>The worker can either assign a worker id explicitly, or have the Data Dispatcher client generate a random worker id.
+In both cases, the worker id will be stored in CWD/.data_dispatcher_worker_id file and will be used to identify the worker in the future interactions with the
+Data Dispatcher.</p>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>ddisp<span class="w"> </span>worker<span class="w"> </span>id<span class="w"> </span>-n<span class="w">          </span><span class="c1"># - generate random worker id</span>
+9e0124f8
+
+$<span class="w"> </span>ddisp<span class="w"> </span>worker<span class="w"> </span>id<span class="w"> </span>&lt;assigned<span class="w"> </span>worker<span class="w"> </span>id&gt;
+<span class="c1"># example</span>
+$<span class="w"> </span><span class="nv">my_id</span><span class="o">=</span><span class="sb">`</span>hostname<span class="sb">`</span>_<span class="sb">`</span>date<span class="w"> </span>+%s<span class="sb">`</span>
+$<span class="w"> </span>ddisp<span class="w"> </span>worker<span class="w"> </span>id<span class="w"> </span><span class="nv">$my_id</span>
+fnpc123_1645849756
+
+$<span class="w"> </span>ddisp<span class="w"> </span>worker<span class="w"> </span>id<span class="w">            </span><span class="c1"># - prints current worker id</span>
+fnpc123_1645849756
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+<section id="getting-next-file-to-process">
+<h4>Getting next file to process<a class="headerlink" href="#getting-next-file-to-process" title="Link to this heading">¶</a></h4>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>ddisp<span class="w"> </span>worker<span class="w"> </span>next<span class="w"> </span><span class="o">[</span>options<span class="o">]</span><span class="w"> </span>&lt;project_id&gt;<span class="w"> </span>--<span class="w"> </span>get<span class="w"> </span>next<span class="w"> </span>available<span class="w"> </span>file
+<span class="w">      </span>-w<span class="w"> </span>&lt;worker<span class="w"> </span>id&gt;<span class="w">     </span>--<span class="w"> </span>specify<span class="w"> </span>worker<span class="w"> </span>id
+<span class="w">      </span>-c<span class="w"> </span>&lt;cpu<span class="w"> </span>site&gt;<span class="w">      </span>--<span class="w"> </span>choose<span class="w"> </span>the<span class="w"> </span>file<span class="w"> </span>according<span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span>CPU/RSE<span class="w"> </span>proximity<span class="w"> </span>map<span class="w"> </span><span class="k">for</span><span class="w"> </span>the<span class="w"> </span>CPU<span class="w"> </span>site
+<span class="w">      </span>-j<span class="w"> </span>&lt;json<span class="w"> </span>file&gt;<span class="w">     </span>--<span class="w"> </span>write<span class="w"> </span>reserved<span class="w"> </span>file<span class="w"> </span>information<span class="w"> </span>into<span class="w"> </span>a<span class="w"> </span>JSON<span class="w"> </span>file
+<span class="w">      </span>-t<span class="w"> </span>&lt;timeout&gt;<span class="w">       </span>--<span class="w"> </span><span class="nb">wait</span><span class="w"> </span><span class="k">for</span><span class="w"> </span>next<span class="w"> </span>file<span class="w"> </span><span class="k">until</span><span class="w"> </span><span class="s2">&quot;timeout&quot;</span><span class="w"> </span>seconds,
+<span class="w">                            </span>otherwise,<span class="w"> </span><span class="nb">wait</span><span class="w"> </span><span class="k">until</span><span class="w"> </span>the<span class="w"> </span>project<span class="w"> </span>finishes<span class="w"> </span>or<span class="w"> </span>a<span class="w"> </span>file<span class="w"> </span>is<span class="w"> </span>reserved
+</pre></div>
+</div>
+</div></blockquote>
+<p>The command will block until one of the following events occurs:</p>
+<ul class="simple">
+<li><p>One of project files becomes available for consumption and is reserved for the worker</p></li>
+<li><p>If a timeout was specified with <code class="docutils literal notranslate"><span class="pre">-t</span></code> and the timeout passes</p></li>
+<li><p>The project finishes - all the files are processed successfully or failed permanently</p></li>
+</ul>
+<p>Depending on the outcome, the command will:</p>
+<blockquote>
+<div><ul>
+<li><p>If a file becomes available and was reserved for the worker</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>print the reserved file DID (namespace:name) and, optionally, write the file info in the
+JSON file specified with <code class="docutils literal notranslate"><span class="pre">-j</span></code></p></li>
+<li><p>exit with 0 (success) code</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>If the command times out</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>print “timeout”</p></li>
+<li><p>exit with code 1</p></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p>If the project is done (all the files are either done or failed permanently)</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>print “done”</p></li>
+<li><p>exit with code 1</p></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</div></blockquote>
+<p>Here is an example of using this command:</p>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+
+...
+
+<span class="nv">out</span><span class="o">=</span><span class="k">$(</span>dd<span class="w"> </span>worker<span class="w"> </span>next<span class="w"> </span>-j<span class="w"> </span>file_info.json<span class="w"> </span>-c<span class="w"> </span><span class="nv">$my_cpu_site</span><span class="w"> </span><span class="nv">$my_project</span><span class="k">)</span>
+<span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="nv">$?</span><span class="w"> </span>-eq<span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="o">]</span>
+<span class="k">then</span>
+<span class="w">     </span><span class="c1"># process the file using file info from the file_info.json</span>
+<span class="k">else</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="nv">$out</span><span class="w"> </span><span class="k">in</span>
+<span class="w">        </span><span class="k">done</span><span class="o">)</span>
+<span class="w">            </span><span class="c1"># project is done</span>
+<span class="w">            </span><span class="p">;;</span>
+<span class="w">        </span>timeout<span class="o">)</span>
+<span class="w">            </span><span class="c1"># timed out, can try to reserve again</span>
+<span class="w">            </span><span class="p">;;</span>
+<span class="w">    </span><span class="k">esac</span>
+<span class="k">fi</span>
+</pre></div>
+</div>
+</div></blockquote>
+<p>If “-j” option is used, then the information about the reserved file and its available
+replicas will be stored in the provided file in JSON format.
+Replicas located in unavailable RSEs will _not_ be included, even if they are known to be staged in the RSE.</p>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>ddisp<span class="w"> </span>worker<span class="w"> </span>next<span class="w"> </span>-j<span class="w"> </span>file_info.json<span class="w"> </span>-w<span class="w"> </span>worker_123<span class="w"> </span><span class="m">70</span>
+np04_reco_keepup:np04_raw_run006534_0005_dl1_reco_16440189_0_20190217T040518.root
+
+$<span class="w"> </span>cat<span class="w"> </span>file_info.json
+<span class="o">{</span>
+<span class="w">  </span><span class="s2">&quot;attempts&quot;</span>:<span class="w"> </span><span class="m">1</span>,
+<span class="w">  </span><span class="s2">&quot;attributes&quot;</span>:<span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="s2">&quot;core.runs&quot;</span>:<span class="w"> </span><span class="o">[</span>
+<span class="w">      </span><span class="m">6534</span>
+<span class="w">    </span><span class="o">]</span>
+<span class="w">  </span><span class="o">}</span>,
+<span class="w">  </span><span class="s2">&quot;name&quot;</span>:<span class="w"> </span><span class="s2">&quot;np04_raw_run006534_0005_dl1_reco_16440189_0_20190217T040518.root&quot;</span>,
+<span class="w">  </span><span class="s2">&quot;namespace&quot;</span>:<span class="w"> </span><span class="s2">&quot;np04_reco_keepup&quot;</span>,
+<span class="w">  </span><span class="s2">&quot;project_attributes&quot;</span>:<span class="w"> </span><span class="o">{</span>
+<span class="w">    </span><span class="s2">&quot;pi&quot;</span>:<span class="w"> </span><span class="m">3</span>.14,
+<span class="w">    </span><span class="s2">&quot;x&quot;</span>:<span class="w"> </span><span class="s2">&quot;y&quot;</span>
+<span class="w">  </span><span class="o">}</span>,
+<span class="w">  </span><span class="s2">&quot;project_id&quot;</span>:<span class="w"> </span><span class="m">70</span>,
+<span class="w">  </span><span class="s2">&quot;replicas&quot;</span>:<span class="w"> </span><span class="o">[</span>
+<span class="w">    </span><span class="o">{</span>
+<span class="w">      </span><span class="s2">&quot;available&quot;</span>:<span class="w"> </span>true,
+<span class="w">      </span><span class="s2">&quot;name&quot;</span>:<span class="w"> </span><span class="s2">&quot;np04_raw_run006535_0087_dl8_reco_16217100_0_20190217T105045.root&quot;</span>,
+<span class="w">      </span><span class="s2">&quot;namespace&quot;</span>:<span class="w"> </span><span class="s2">&quot;np04_reco_keepup&quot;</span>,
+<span class="w">      </span><span class="s2">&quot;path&quot;</span>:<span class="w"> </span><span class="s2">&quot;/pnfs/fnal.gov/usr/...&quot;</span>,
+<span class="w">      </span><span class="s2">&quot;preference&quot;</span>:<span class="w"> </span><span class="m">0</span>,
+<span class="w">      </span><span class="s2">&quot;rse&quot;</span>:<span class="w"> </span><span class="s2">&quot;FNAL_DCACHE&quot;</span>,
+<span class="w">      </span><span class="s2">&quot;rse_available&quot;</span>:<span class="w"> </span>true,
+<span class="w">      </span><span class="s2">&quot;url&quot;</span>:<span class="w"> </span><span class="s2">&quot;root://fndca1.fnal.gov:1094/pnfs/fnal.gov/usr/...&quot;</span>
+<span class="w">    </span><span class="o">}</span>
+<span class="w">  </span><span class="o">]</span>,
+<span class="w">  </span><span class="s2">&quot;state&quot;</span>:<span class="w"> </span><span class="s2">&quot;reserved&quot;</span>,
+<span class="w">  </span><span class="s2">&quot;worker_id&quot;</span>:<span class="w"> </span><span class="s2">&quot;worker_123&quot;</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+<section id="releasing-the-file">
+<h4>Releasing the file<a class="headerlink" href="#releasing-the-file" title="Link to this heading">¶</a></h4>
+<p>If the file was processed successfully, the worker issues “done” command:</p>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>ddisp<span class="w"> </span>worker<span class="w"> </span><span class="k">done</span><span class="w"> </span>&lt;project_id&gt;<span class="w"> </span>&lt;file<span class="w"> </span>namespace&gt;:&lt;file<span class="w"> </span>name&gt;
+</pre></div>
+</div>
+</div></blockquote>
+<p>If the file processing failed, the worker issues “failed” command. “-f” option is used to signal that the file has failed permanently and should
+not be retried. Otherwise, the failed file will be moved to the back of the project’s file list and given to a worker for consumption in the future.</p>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>ddisp<span class="w"> </span>worker<span class="w"> </span>failed<span class="w"> </span><span class="o">[</span>-f<span class="o">]</span><span class="w"> </span>&lt;project_id&gt;<span class="w"> </span>&lt;file<span class="w"> </span>namespace&gt;:&lt;file<span class="w"> </span>name&gt;
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+</section>
+<section id="rses">
+<h3>RSEs<a class="headerlink" href="#rses" title="Link to this heading">¶</a></h3>
+<p>Data Dispatcher maintains minimal set of information about known RSEs, including the RSE availability state.</p>
+<section id="listing-known-rses">
+<h4>Listing known RSEs<a class="headerlink" href="#listing-known-rses" title="Link to this heading">¶</a></h4>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>ddisp<span class="w"> </span>rse<span class="w"> </span>list<span class="w"> </span>-j
+<span class="o">[</span>
+<span class="w">  </span><span class="o">{</span>
+<span class="w">    </span><span class="s2">&quot;add_prefix&quot;</span>:<span class="w"> </span><span class="s2">&quot;&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;description&quot;</span>:<span class="w"> </span><span class="s2">&quot;FNAL dCache&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;is_available&quot;</span>:<span class="w"> </span>true,
+<span class="w">    </span><span class="s2">&quot;is_tape&quot;</span>:<span class="w"> </span>true,
+<span class="w">    </span><span class="s2">&quot;name&quot;</span>:<span class="w"> </span><span class="s2">&quot;FNAL_DCACHE&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;pin_url&quot;</span>:<span class="w"> </span>null,
+<span class="w">    </span><span class="s2">&quot;poll_url&quot;</span>:<span class="w"> </span>null,
+<span class="w">    </span><span class="s2">&quot;preference&quot;</span>:<span class="w"> </span><span class="m">0</span>,
+<span class="w">    </span><span class="s2">&quot;remove_prefix&quot;</span>:<span class="w"> </span><span class="s2">&quot;&quot;</span>
+<span class="w">  </span><span class="o">}</span>,
+<span class="w">  </span><span class="o">{</span>
+<span class="w">    </span><span class="s2">&quot;add_prefix&quot;</span>:<span class="w"> </span><span class="s2">&quot;&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;description&quot;</span>:<span class="w"> </span><span class="s2">&quot;&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;is_available&quot;</span>:<span class="w"> </span>true,
+<span class="w">    </span><span class="s2">&quot;is_tape&quot;</span>:<span class="w"> </span>true,
+<span class="w">    </span><span class="s2">&quot;name&quot;</span>:<span class="w"> </span><span class="s2">&quot;FNAL_DCACHE_TEST&quot;</span>,
+<span class="w">    </span><span class="s2">&quot;pin_url&quot;</span>:<span class="w"> </span>null,
+<span class="w">    </span><span class="s2">&quot;poll_url&quot;</span>:<span class="w"> </span>null,
+<span class="w">    </span><span class="s2">&quot;preference&quot;</span>:<span class="w"> </span><span class="m">0</span>,
+<span class="w">    </span><span class="s2">&quot;remove_prefix&quot;</span>:<span class="w"> </span><span class="s2">&quot;&quot;</span>
+<span class="w">  </span><span class="o">}</span>
+<span class="o">]</span>
+
+$<span class="w"> </span>ddisp<span class="w"> </span>rse<span class="w"> </span>list
+Name<span class="w">                           </span>Tape<span class="w"> </span>Status<span class="w"> </span>Enabled<span class="w"> </span>Description
+------------------------------<span class="w"> </span>----<span class="w"> </span>------<span class="w"> </span>-------<span class="w"> </span>------------------------------------------------------------
+FNAL_DCACHE<span class="w">                    </span>tape<span class="w">     </span>up<span class="w">     </span>yes<span class="w"> </span>FNAL<span class="w"> </span>dCache
+FNAL_DCACHE_PERSISTENT<span class="w">         </span>tape<span class="w">     </span>up<span class="w">     </span>yes
+FNAL_DCACHE_STAGING<span class="w">            </span>tape<span class="w">     </span>up<span class="w">     </span>yes
+FNAL_DCACHE_TEST<span class="w">               </span>tape<span class="w">     </span>up<span class="w">     </span>yes
+LANCASTER<span class="w">                               </span>up<span class="w">     </span>yes
+TEST_RSE<span class="w">                                </span>up<span class="w">     </span>yes<span class="w"> </span>Test<span class="w"> </span>RSE
+--------------------------------------------------------------------------------------------------------------
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+<section id="showing-information-about-particular-rse">
+<h4>Showing information about particular RSE<a class="headerlink" href="#showing-information-about-particular-rse" title="Link to this heading">¶</a></h4>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>ddisp<span class="w"> </span>rse<span class="w"> </span>show<span class="w"> </span>FNAL_DCACHE
+RSE:<span class="w">            </span>FNAL_DCACHE
+Preference:<span class="w">     </span><span class="m">0</span>
+Tape:<span class="w">           </span>yes
+Available:<span class="w">      </span>yes
+Pin<span class="w"> </span>URL:
+Poll<span class="w"> </span>URL:
+Remove<span class="w"> </span>prefix:
+Add<span class="w"> </span>prefix:
+
+$<span class="w"> </span>ddisp<span class="w"> </span>rse<span class="w"> </span>show<span class="w"> </span>-j<span class="w"> </span>FNAL_DCACHE
+<span class="o">{</span>
+<span class="w">  </span><span class="s2">&quot;add_prefix&quot;</span>:<span class="w"> </span><span class="s2">&quot;&quot;</span>,
+<span class="w">  </span><span class="s2">&quot;description&quot;</span>:<span class="w"> </span><span class="s2">&quot;FNAL dCache&quot;</span>,
+<span class="w">  </span><span class="s2">&quot;is_available&quot;</span>:<span class="w"> </span>true,
+<span class="w">  </span><span class="s2">&quot;is_tape&quot;</span>:<span class="w"> </span>true,
+<span class="w">  </span><span class="s2">&quot;name&quot;</span>:<span class="w"> </span><span class="s2">&quot;FNAL_DCACHE&quot;</span>,
+<span class="w">  </span><span class="s2">&quot;pin_url&quot;</span>:<span class="w"> </span>null,
+<span class="w">  </span><span class="s2">&quot;poll_url&quot;</span>:<span class="w"> </span>null,
+<span class="w">  </span><span class="s2">&quot;preference&quot;</span>:<span class="w"> </span><span class="m">0</span>,
+<span class="w">  </span><span class="s2">&quot;remove_prefix&quot;</span>:<span class="w"> </span><span class="s2">&quot;&quot;</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+<section id="creating-an-rse">
+<h4>Creating an RSE<a class="headerlink" href="#creating-an-rse" title="Link to this heading">¶</a></h4>
+<p>Add a new RSE in data dispatcher. This command requires admin privileges.</p>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>ddisp<span class="w"> </span>rse<span class="w"> </span>create<span class="w"> </span><span class="o">[</span>options<span class="o">]</span><span class="w"> </span>&lt;rse_name&gt;<span class="w">          </span>--<span class="w"> </span>create<span class="w"> </span>RSE
+
+<span class="w">  </span>-e<span class="w"> </span><span class="o">(</span>True<span class="p">|</span>False<span class="o">)</span><span class="w">                           </span>--<span class="w"> </span>the<span class="w"> </span>RSE<span class="w"> </span>should<span class="w"> </span>be<span class="w"> </span>enabled
+<span class="w">  </span>-d<span class="w"> </span>&lt;description&gt;<span class="w">                          </span>--<span class="w"> </span>description<span class="w"> </span>of<span class="w"> </span>RSE
+<span class="w">  </span>-t<span class="w"> </span><span class="o">(</span>True<span class="p">|</span>False<span class="o">)</span><span class="w">                           </span>--<span class="w"> </span>the<span class="w"> </span>RSE<span class="w"> </span>is<span class="w"> </span>tape
+<span class="w">  </span>-a<span class="w"> </span><span class="o">(</span>True<span class="p">|</span>False<span class="o">)</span><span class="w">                           </span>--<span class="w"> </span>the<span class="w"> </span>RSE<span class="w"> </span>should<span class="w"> </span>be<span class="w"> </span>available
+<span class="w">  </span>-o<span class="w"> </span>&lt;preference&gt;<span class="w">                           </span>--<span class="w"> </span>preference<span class="w"> </span>of<span class="w"> </span>RSE<span class="w"> </span><span class="o">(</span>integer<span class="o">)</span>
+
+<span class="w">  </span>-m<span class="w"> </span>&lt;prefix&gt;<span class="w">                               </span>--<span class="w"> </span>add<span class="w"> </span>prefix
+<span class="w">  </span>-l<span class="w"> </span>&lt;prefix&gt;<span class="w">                               </span>--<span class="w"> </span>remove<span class="w"> </span>prefix
+
+<span class="w">  </span>For<span class="w"> </span>dCache<span class="w"> </span>RSEs<span class="w"> </span>only:
+<span class="w">  </span>-i<span class="w"> </span><span class="o">(</span>wlcg<span class="p">|</span>native<span class="o">)</span><span class="w">                          </span>--<span class="w"> </span>interface
+<span class="w">  </span>-u<span class="w"> </span>&lt;url&gt;<span class="w">                                  </span>--<span class="w"> </span>pin/discovery<span class="w"> </span>url
+<span class="w">  </span>-p<span class="w"> </span>&lt;prefix&gt;<span class="w">                               </span>--<span class="w"> </span>pin<span class="w"> </span>prefix
+<span class="w">  </span>-f<span class="w"> </span>&lt;url&gt;<span class="w">                                  </span>--<span class="w"> </span>poll<span class="w"> </span>url<span class="w"> </span><span class="o">(</span>only<span class="w"> </span><span class="k">for</span><span class="w"> </span>native,<span class="w"> </span>not<span class="w"> </span>used<span class="w"> </span><span class="k">for</span><span class="w"> </span>wlcg<span class="o">)</span>
+
+<span class="w">  </span>-j<span class="w">                                        </span>--<span class="w"> </span>json<span class="w"> </span>output
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+<section id="changing-rse-attributes">
+<h4>Changing RSE attributes<a class="headerlink" href="#changing-rse-attributes" title="Link to this heading">¶</a></h4>
+<p>Update any of the parameters of an RSE. This command requires admin privileges. To update the availability:</p>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>ddisp<span class="w"> </span>rse<span class="w"> </span>update<span class="w"> </span>-a<span class="w"> </span>False<span class="w"> </span>FNAL_DCACHE
+RSE:<span class="w">            </span>FNAL_DCACHE
+Preference:<span class="w">     </span><span class="m">0</span>
+Tape:<span class="w">           </span>yes
+Available:<span class="w">      </span>no
+...
+</pre></div>
+</div>
+</div></blockquote>
+<p>When an RSE is unavailable (down), replicas in this RSE are considered unavailable even if this is a disk RSE or they are known to be staged in a tape RSE.</p>
+</section>
+<section id="deleting-an-rse">
+<h4>Deleting an RSE<a class="headerlink" href="#deleting-an-rse" title="Link to this heading">¶</a></h4>
+<p>Remove an RSE from data dispatcher. This command requires admin privileges.</p>
+<blockquote>
+<div><div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$<span class="w"> </span>ddisp<span class="w"> </span>rse<span class="w"> </span>delete<span class="w"> </span>&lt;rse_name&gt;<span class="w">                    </span>--<span class="w"> </span>remove<span class="w"> </span>RSE
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+</section>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="Main">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Data Dispatcher User Interface</a><ul>
+<li><a class="reference internal" href="#setting-up-the-environment">Setting up the environment</a></li>
+<li><a class="reference internal" href="#data-dispatcher-commands">Data Dispatcher Commands</a><ul>
+<li><a class="reference internal" href="#logging-in">Logging in</a></li>
+<li><a class="reference internal" href="#software-versions">Software versions</a></li>
+<li><a class="reference internal" href="#projects">Projects</a><ul>
+<li><a class="reference internal" href="#creating-project">Creating project</a></li>
+<li><a class="reference internal" href="#project-time-outs">Project time-outs</a></li>
+<li><a class="reference internal" href="#project-and-file-metadata">Project and file metadata</a></li>
+<li><a class="reference internal" href="#special-project-attributes">Special project attributes</a></li>
+<li><a class="reference internal" href="#project-ownership-and-use-authorization">Project ownership and use authorization</a></li>
+<li><a class="reference internal" href="#project-states">Project states</a></li>
+<li><a class="reference internal" href="#listing-projects">Listing projects</a></li>
+<li><a class="reference internal" href="#viewing-projects">Viewing projects</a></li>
+<li><a class="reference internal" href="#searching-projects">Searching projects</a></li>
+<li><a class="reference internal" href="#copying-projects">Copying projects</a></li>
+<li><a class="reference internal" href="#restarting-files-in-a-project">Restarting files in a project</a></li>
+<li><a class="reference internal" href="#cancelling-project">Cancelling project</a></li>
+<li><a class="reference internal" href="#deleting-project">Deleting project</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#files">Files</a><ul>
+<li><a class="reference internal" href="#viewing-files">Viewing files</a></li>
+<li><a class="reference internal" href="#listing-files">Listing files</a></li>
+<li><a class="reference internal" href="#file-states">File states</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#data-processing-workflow-worker-side">Data Processing Workflow (worker side)</a><ul>
+<li><a class="reference internal" href="#setting-worker-id">Setting worker id</a></li>
+<li><a class="reference internal" href="#getting-next-file-to-process">Getting next file to process</a></li>
+<li><a class="reference internal" href="#releasing-the-file">Releasing the file</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#rses">RSEs</a><ul>
+<li><a class="reference internal" href="#listing-known-rses">Listing known RSEs</a></li>
+<li><a class="reference internal" href="#showing-information-about-particular-rse">Showing information about particular RSE</a></li>
+<li><a class="reference internal" href="#creating-an-rse">Creating an RSE</a></li>
+<li><a class="reference internal" href="#changing-rse-attributes">Changing RSE attributes</a></li>
+<li><a class="reference internal" href="#deleting-an-rse">Deleting an RSE</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="install.html"
+                          title="previous chapter">Data Dispatcher Client Installation and Configuration</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="webapi.html"
+                          title="next chapter">Python API</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/ui.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<search id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</search>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="Related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="webapi.html" title="Python API"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="install.html" title="Data Dispatcher Client Installation and Configuration"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Data Dispatcher  documentation</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Data Dispatcher User Interface</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+    &#169; Copyright 2022, Igor Mandrichenko.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    </div>
+  </body>
+</html>
