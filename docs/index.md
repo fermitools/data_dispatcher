@@ -2,7 +2,6 @@
 ## Documentation
 
 Contents:
-
 * [Install](./install.rst)
 * [UI](./ui.rst)
 * [Web API](../../../wiki/Web-API)
