@@ -32,7 +32,9 @@ author = 'Igor Mandrichenko'
 # ones.
 extensions = [
     'sphinx.ext.napoleon',
-    'sphinx.ext.autodoc'
+    'sphinx.ext.autodoc',
+    'sphinx.ext.viewcode',
+    'sphinx_copybutton'
 ]
 
 autoclass_content = "both"
@@ -52,8 +54,19 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'alabaster'
-html_theme = 'nature'
+#html_theme = 'alabaster'
+#html_theme = 'nature'
+html_theme = 'sphinx_book_theme'
+
+copybutton_prompt_text = r"\$ "
+copybutton_prompt_is_regexp = True
+
+html_theme_options = {
+    "repository_url": "https://github.com/fermitools/data_dispatcher",
+    "use_repository_button": True,
+    "navigation_depth": 4,  # how many levels of nested headers show in sidebar
+    "collapse_navigation": False
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
