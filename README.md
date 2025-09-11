@@ -3,8 +3,7 @@
 
 File processing coordination service for use with [MetaCat](https://github.com/fermitools/metacat) and [Rucio](https://rucio.cern.ch)
 
-* [Documentation](./docs/index.md)
-* [Wiki](./wiki)
+* [Documentation](https://fermitools.github.io/data_dispatcher/)
 
 ```
     # install Data Dispatcher Client
