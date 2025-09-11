@@ -329,7 +329,9 @@
     	    <td><a class=button href="{{GLOBAL_AppRootPath}}/R/proximity_map">CPU/RSE proximity map</a></td>
     	    <td><a class=button href="{{GLOBAL_AppRootPath}}/P/stats">Statistics</a></td>
             <td><span style="color:#AAA; padding-right: 10px"><i>All times in UTC:&nbsp;<span id="current_utc"></span></i></span></td>
-            <td style="width:100%"></td>
+            <td style="width:100%" align=right>
+                    <a href="https://fermitools.github.io/data_dispatcher/" target="_new">docs</a>
+                </td>
     		<td>
                         {% if G_User %}
                             <span style="color:#AAA">logged in as {{G_User.Name or ""}}&nbsp;{{G_User.Username}}&nbsp;</span><a class=button  href="{{GLOBAL_AppRootPath}}/A/logout?redirect={{GLOBAL_AppRootPath}}/index">log out</a>
