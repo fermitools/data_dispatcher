@@ -15,6 +15,19 @@ from pythreader import PyThread, Primitive, Scheduler, synchronized, TaskQueue, 
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
+import functools, traceback
+
+def log_exceptions(f):
+    ''' decorator logging exceptions and not letting them past '''
+    @functools.wraps(f)
+    def wrapper( self,  *args, **kwargs ):
+        try:
+           return f( self, *args, **kwargs )
+        except Exception:
+           self.log(traceback.format_exc())
+           return None
+    return wrapper
+
 def to_did(namespace, name):
     return f"{namespace}:{name}"
 
@@ -296,6 +309,7 @@ class ProjectMonitor(Primitive, Logged):
                     tape_replicas_by_rse.setdefault(rse, {})[replica.did()] = replica
         return tape_replicas_by_rse
         
+    @log_exceptions
     @synchronized
     def check_project_state(self):
         if self.Removed:
@@ -311,6 +325,7 @@ class ProjectMonitor(Primitive, Logged):
             self.log("removing project:", reason)
             self.remove_me(reason)          # this will cancel this and other repeating task
 
+    @log_exceptions
     @synchronized
     def sync_replicas(self):
         if self.Removed:
@@ -382,6 +397,7 @@ class ProjectMonitor(Primitive, Logged):
             self.error(textwrap.indent(traceback.format_exc(), "  "))
         self.debug("sync_replicas done")
 
+    @log_exceptions
     @synchronized
     def update_replicas_availability(self):
         if self.Removed:
@@ -448,6 +464,7 @@ class ProjectMaster(PyThread, Logged):
         self.RucioClient = rucio_client
         self.URLSchemes = url_schemes or None
 
+    @log_exceptions
     def clean(self):
         self.debug("cleaner...")
         try:
