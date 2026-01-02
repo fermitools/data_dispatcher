@@ -234,7 +234,7 @@ class ProjectQueryConverter(Converter):
     def object_attribute(self, args):
         assert len(args) == 1
         word = args[0].value
-        assert word in ("owner", "state", "created", "ended", "id", "query")
+        assert word in ProjectExpressionDNF.ObjectAttributes, "object attribute must be one of {%s}" % " ".join(ProjectExpressionDNF.ObjectAttributes)
         return Node("object_attribute", name=word)
 
     def _convert_array_all(self, node):
