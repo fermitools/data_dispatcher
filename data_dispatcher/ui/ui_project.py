@@ -445,7 +445,6 @@ class SearchCommand(CLICommand):
             if not args:
                 raise InvalidArguments("Search query is not specified")
             query = " ".join(args)
-        print("query is", query)
         lst = client.search_projects(query, state=state, owner=owner, with_files=True, with_replicas=False)
         if "-j" in opts:
             print(pretty_json(list(lst)))
