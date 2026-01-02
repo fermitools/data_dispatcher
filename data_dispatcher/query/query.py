@@ -287,7 +287,7 @@ class ProjectQuery(object):
     def sql(self):
         table = DBProject.Table
         columns = DBProject.columns(table)
-        meta_sql = MetaExpressionDNF(self.convert()).sql(table, "attributes")
+        meta_sql = ProjectExpressionDNF(self.convert()).sql(table, "attributes")
         return insert_sql(f"""
             select {columns} 
                 from {table} --
