@@ -5,6 +5,9 @@ from metacat.common import MetaExpressionDNF
 from metacat.util import insert_sql
 from data_dispatcher.db import DBProject
 
+class ProjectExpressionDNF(MetaExpressionDNF):
+    ObjectAttributes = ["owner", "state", "created_timestamp", "ended_timestamp", "id", "query", "worker_timeout", "idle_timeout"]
+
 class ProjectQueryConverter(Converter):
     
     def __default__(self, typ, children, meta):

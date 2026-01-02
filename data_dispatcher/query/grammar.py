@@ -27,7 +27,7 @@ scalar: ATTR_NAME                                       -> object_attribute
         | META_NAME "[" STRING "]"                      -> array_subscript
         | "len" "(" META_NAME ")"                       -> array_length
 
-ATTR_NAME: "owner" | "state" | "created" | "ended" | "id" | "query"
+ATTR_NAME: "owner" | "state" | "created_timestamp" | "ended_timestamp" | "id" | "query" | "worker_timeout" | "idle_timeout"
 
 META_NAME: WORD                            
 

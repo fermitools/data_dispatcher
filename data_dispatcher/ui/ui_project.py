@@ -424,7 +424,7 @@ class SearchCommand(CLICommand):
     
     # Hidden for now
     
-    Opts = "ju:s:q"
+    Opts = "ju:s:q:"
     Usage = """[options] (-q (<query file>|-) |<search query>)            -- search projects
             -j                                          - JSON output
             -u <owner>                                  - filter by owner
@@ -445,6 +445,7 @@ class SearchCommand(CLICommand):
             if not args:
                 raise InvalidArguments("Search query is not specified")
             query = " ".join(args)
+        print("query is", query)
         lst = client.search_projects(query, state=state, owner=owner, with_files=True, with_replicas=False)
         if "-j" in opts:
             print(pretty_json(list(lst)))
@@ -494,7 +495,7 @@ ProjectCLI = CLI(
     "copy",     CopyCommand(),
     "show",     ShowCommand(),
     "list",     ListCommand(),
-    # "search",   SearchCommand(),
+    "search",   SearchCommand(),
     "restart",  RestartCommand(),
     "activate", ActivateCommand(),
     "cancel",   CancelCommand(),
