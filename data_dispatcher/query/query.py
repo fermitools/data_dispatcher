@@ -5,6 +5,9 @@ from metacat.common import MetaExpressionDNF
 from metacat.util import insert_sql
 from data_dispatcher.db import DBProject
 
+class ProjectExpressionDNF(MetaExpressionDNF):
+    ObjectAttributes = ["owner", "state", "created_timestamp", "ended_timestamp", "id", "query", "worker_timeout", "idle_timeout"]
+
 class ProjectQueryConverter(Converter):
     
     def __default__(self, typ, children, meta):
@@ -231,7 +234,7 @@ class ProjectQueryConverter(Converter):
     def object_attribute(self, args):
         assert len(args) == 1
         word = args[0].value
-        assert word in ("owner", "state", "created", "ended", "id", "query")
+        assert word in ProjectExpressionDNF.ObjectAttributes, "object attribute must be one of {%s}" % " ".join(ProjectExpressionDNF.ObjectAttributes)
         return Node("object_attribute", name=word)
 
     def _convert_array_all(self, node):
@@ -284,7 +287,7 @@ class ProjectQuery(object):
     def sql(self):
         table = DBProject.Table
         columns = DBProject.columns(table)
-        meta_sql = MetaExpressionDNF(self.convert()).sql(table, "attributes")
+        meta_sql = ProjectExpressionDNF(self.convert()).sql(table, "attributes")
         return insert_sql(f"""
             select {columns} 
                 from {table} --

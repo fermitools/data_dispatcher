@@ -7,9 +7,12 @@ Each Data Dispatcher project has the following attributes:
 
     * owner - string - username of the user who created the project
     * state - string - current state of the project. Can be ``active``, ``abandoned``, ``cancelled``, ``done``, ``failed``
-    * created - datetime - date/time when the project was created
+    * created_timestamp - datetime - date/time when the project was created
+    * ended_timestamp - datetime - date/time when the project was created
     * id - integer - project id
     * query - string - MetaCat query used to select files for the project
+    * worker_timeout - integer seconds
+    * idle_timeout - integer seconds
 
 In addition, a project may have an arbitrary dictionary with user-defined project metadata. For example:
 
@@ -37,7 +40,7 @@ built from operations on project attributes and metadata fields. If an attribute
 be referring to the project attribute, not the project metadata.
 
 Project query is a logical combination of primitive operations expressed in terms of constants, project attributes and metadata fields.
-If metadata includes a field with the same name as a project attribute (e.g. "created" or "owner"), the query always uses the
+If metadata includes a field with the same name as a project attribute (e.g. "created_timestamp" or "owner"), the query always uses the
 value of the named project attribute and not the metadata field.
 
 When the query is executed the combined logical expression is evaluated for each project and then those projects, for which the
@@ -110,7 +113,7 @@ If you need such a string to remain a string, it needs to be enclosed in quotes.
 
 Unquoted strings ``null``, ``true`` and ``false`` are treated as null and boolean constants.
 
-The project creation datetime attribute `created` is a date-time field. To enter its value in the query, use string in the format:
+The project creation datetime attribute `created_timestamp` and `ended_timestamp` are  a date-time field. To enter its value in the query, use string in the format:
 
     .. code-block::
     
@@ -124,8 +127,8 @@ Query Examples
         owner=johndoe and created > "2022-04-01"
     
         state = "abandoned" 
-            and created < "2022-05-01 00:00:00" 
-            and created >  "2022-04-01 00:00:00"
+            and created_timestamp < "2022-05-01 00:00:00" 
+            and created_timestamp >  "2022-04-01 00:00:00"
 
         state = failed and "dc4:dc4" in query
 

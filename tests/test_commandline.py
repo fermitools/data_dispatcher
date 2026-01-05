@@ -1,6 +1,7 @@
 import pytest
 import os
 import time
+import datetime
 
 from env import env, token, auth
 
@@ -124,13 +125,6 @@ def test_ddisp_project_show_state(auth, proj_id):
         data = fin.read()
     assert data.find("Invalid file state") >= 0
 
-# needs to be fixed
-#def test_ddisp_project_search(auth, proj_id):
-#    with os.popen("ddisp project search -s active", "r") as fin:
-#        data = fin.read()
-#    assert data.find(str(proj_id)) > 0
-#    assert data.find(os.environ["USER"]) > 0
-
 def test_ddisp_worker_done(auth, proj_id, next_file):
     with os.popen(f"ddisp worker done {proj_id} {next_file} ", "r") as fin:
         data = fin.read()
@@ -169,6 +163,25 @@ def test_ddisp_worker_failed(auth, proj_id):
         data = fin.read()
     assert data.find("failed") > 0
 
+def test_ddisp_project_search(auth, proj_id):
+    cmd = "ddisp project search -s active 'owner=%s'" % os.environ["USER"]
+    with os.popen(cmd, "r") as fin:
+        data = fin.read()
+    print("got: ", data)
+    assert data.find(str(proj_id)) > 0
+    assert data.find(os.environ["USER"]) > 0
+
+def test_ddisp_project_search_2(auth, proj_id):
+    cmd = "ddisp project search -s active 'owner=%s and created_timestamp <= \"%s\"'" % (
+         os.environ["USER"],
+         datetime.datetime.now().isoformat()
+    )
+    with os.popen(cmd , "r") as fin:
+        data = fin.read()
+    print("got: ", data)
+    assert data.find(str(proj_id)) > 0
+    assert data.find(os.environ["USER"]) > 0
+
 def test_ddisp_worker_failed_all(auth, proj_id):
     with os.popen(f"ddisp file list -s initial {proj_id} | grep initial | awk '{{print $NF}}' ", "r") as fin:
         dids = fin.read().strip()
@@ -194,6 +207,8 @@ def test_ddisp_project_restart(auth, proj_id):
         data = fin.read()
         assert data.find("initial") > 0
         assert data.find("failed") < 0
+
+
 
 def test_ddisp_worker_done_all(auth, proj_id):
     with os.popen(f"ddisp file list -s initial {proj_id} | grep initial | awk '{{print $NF}}' ", "r") as fin:

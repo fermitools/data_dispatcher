@@ -424,7 +424,7 @@ class SearchCommand(CLICommand):
     
     # Hidden for now
     
-    Opts = "ju:s:q"
+    Opts = "ju:s:q:"
     Usage = """[options] (-q (<query file>|-) |<search query>)            -- search projects
             -j                                          - JSON output
             -u <owner>                                  - filter by owner
@@ -494,7 +494,7 @@ ProjectCLI = CLI(
     "copy",     CopyCommand(),
     "show",     ShowCommand(),
     "list",     ListCommand(),
-    # "search",   SearchCommand(),
+    "search",   SearchCommand(),
     "restart",  RestartCommand(),
     "activate", ActivateCommand(),
     "cancel",   CancelCommand(),
