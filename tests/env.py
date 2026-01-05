@@ -8,7 +8,7 @@ if not production:
     base = os.path.dirname(os.path.dirname(__file__))
     os.environ["PATH"] = f"{base}/data_dispatcher/ui:{os.environ['PATH']}"
 #    os.environ["PYTHONPATH"] = f"{base}:{base}/tests/mocks:{os.environ.get('PYTHONPATH','')}"
-    os.environ["PYTHONPATH"] = f"{base}/data_dispatcher:{os.environ['PYTHONPATH']}"
+    os.environ["PYTHONPATH"] = f"{base}:{base}/data_dispatcher:{os.environ['PYTHONPATH']}"
     sys.path.insert(0,base)
 #    sys.path.insert(0,f"{base}/tests/mocks")
 
