@@ -21,8 +21,6 @@ print(data_dispatcher.api.__file__)
 # -- Project information -----------------------------------------------------
 
 project = 'Data Dispatcher'
-copyright = '2022, Igor Mandrichenko'
-author = 'Igor Mandrichenko'
 
 
 # -- General configuration ---------------------------------------------------
