@@ -64,6 +64,7 @@ html_theme_options = {
     "use_repository_button": True,
     "navigation_depth": 4,  # how many levels of nested headers show in sidebar
     "collapse_navigation": False
+    "footer_content_items": []
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
