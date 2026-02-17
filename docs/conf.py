@@ -63,7 +63,7 @@ html_theme_options = {
     "repository_url": "https://github.com/fermitools/data_dispatcher",
     "use_repository_button": True,
     "navigation_depth": 4,  # how many levels of nested headers show in sidebar
-    "collapse_navigation": False
+    "collapse_navigation": False,
     "footer_content_items": []
 }
 
