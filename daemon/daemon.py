@@ -2,6 +2,7 @@ import stompy, pprint, urllib, requests, json, time, traceback, textwrap, sys
 from urllib.parse import urlparse
 from data_dispatcher.db import DBProject, DBReplica, DBRSE, DBProximityMap
 from data_dispatcher.logs import Logged
+from data_dispatcher.scitoken import scitoken
 from daemon_web_server import DaemonWebServer
 from tape_interfaces import get_interface
 
@@ -572,12 +573,15 @@ class RucioListener(PyThread, Logged):
             self.log("Message broker is not configured. Stopping the RucioListener thread.")
             return
         broker_addr = (self.MessageBrokerConfig["host"], self.MessageBrokerConfig["port"])
-        cert_file = self.SSLConfig.get("cert")
-        key_file = self.SSLConfig.get("key")
+        cert_file = self.SSLConfig.get("cert", None)
+        key_file = self.SSLConfig.get("key", None)
         ca_file = self.SSLConfig.get("ca_bundle")
         vhost = self.MessageBrokerConfig.get("vhost", "/")
         subscribe = self.MessageBrokerConfig["subscribe"]
-        connection = stompy.connect(broker_addr, cert_file=cert_file, key_file=key_file, ca_file=ca_file, host=vhost)
+        if not cert_file and scitoken():
+            connection = stompy.connect(broker_addr, ca_file=ca_file, host=vhost, Authorization=f"Bearer {scitoken()}")
+        else:
+            connection = stompy.connect(broker_addr, cert_file=cert_file, key_file=key_file, ca_file=ca_file, host=vhost)
         connection.subscribe(subscribe)
         for frame in connection:
             if frame.Command == "MESSAGE":

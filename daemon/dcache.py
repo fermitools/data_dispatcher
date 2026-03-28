@@ -2,6 +2,7 @@ import traceback, requests, time, json, sys
 from data_dispatcher.db import DBReplica
 from pythreader import Primitive, Scheduler, synchronized, PyThread
 from data_dispatcher.logs import Logged
+from data_dispatcher.scitoken import scitoken
 
 class DCachePoller(PyThread, Logged):
     
@@ -42,8 +43,10 @@ class DCachePoller(PyThread, Logged):
                 remove_dids = []
                 for did, path in burst:
                     url = self.BaseURL + path + "?locality=true"
-                    cert = None if self.Cert is None else (self.Cert, self.Key)
                     #self.debug("dCache poll URL:", url)
+                    cert = None if self.Cert is None else (self.Cert, self.Key)
+                    if cert == None and scitoken():
+                        headers["Authorization"] = f"Bearer {scitoken()}" 
                     response = requests.get(url, headers=headers, cert=cert, verify=False)
                     #self.debug("response:", response.status_code, response.text)
                     if response.status_code == 404:
@@ -135,6 +138,8 @@ class PinRequest(Logged):
             sys.exit(1)
             
         self.debug("request data:", json.dumps(data, indent="  "))
+        if not self.CertTuple and scitoken():
+             headers["Authorization"] = f"Bearer {scitoken()}"
         r = requests.post(url, data = json.dumps(data), headers=headers, 
                     verify=False, cert = self.CertTuple)
         self.debug("response:", r)
@@ -160,6 +165,8 @@ class PinRequest(Logged):
     def query(self):
         assert self.URL is not None
         headers = { "accept" : "application/json" }
+        if cert == None and scitoken():
+            headers["Authorization"] = f"Bearer {scitoken()}" 
         r = requests.get(self.URL, headers=headers, verify=False, cert = self.CertTuple)
         #self.debug("status(): response:", r)
         if r.status_code // 100 == 4:
@@ -193,6 +200,8 @@ class PinRequest(Logged):
     def delete(self):
         assert self.URL is not None
         headers = { "accept" : "application/json" }
+        if cert == None and scitoken():
+            headers["Authorization"] = f"Bearer {scitoken()}" 
         r = requests.delete(self.URL, headers=headers, verify=False, cert = self.CertTuple)
         #self.debug("status(): response:", r)
         if r.status_code // 100 == 4:
