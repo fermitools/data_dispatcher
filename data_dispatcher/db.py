@@ -500,7 +500,7 @@ class DBProject(DBObject, HasLogRecord):
         return (DBProject.from_tuple(db, tup) for tup in cursor_iterator(c))
 
     @staticmethod
-    def list(db, owner=None, state=None, not_state=None, attributes=None, with_handle_counts=False):
+    def list(db, owner=None, state=None, not_state=None, attributes=None, with_handle_counts=False, worker_id = None):
         wheres = [
             "(%(owner)s is null or p.owner=%(owner)s)",
             "(%(state)s is null or p.state=%(state)s)",
@@ -509,6 +509,8 @@ class DBProject(DBObject, HasLogRecord):
         if attributes is not None:
             for name, value in attributes.items():
                 wheres.append("p.attributes @> '{\"%s\": %s}'::jsonb" % (name, json_literal(value)))
+        if worker_id is not None:
+            wheres.append("hs.worker_id = '%s'" % worker_id
         p_wheres = " and ".join(wheres)
         c = db.cursor()
         table = DBProject.Table

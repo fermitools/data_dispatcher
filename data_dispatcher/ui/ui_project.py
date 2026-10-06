@@ -349,7 +349,7 @@ class ShowCommand(CLICommand):
                     print_handles(info["file_handles"], print_replicas)
 
 class ListCommand(CLICommand):
-    Opts = "ju:s:n:a:"
+    Opts = "ju:s:n:a:w:"
     Usage = """[options]                            -- list projects
             -j                                          - JSON output
             -u <owner>                                  - filter by owner, default: current user only
@@ -364,11 +364,13 @@ class ListCommand(CLICommand):
                 abandoned  - projects that have timed out
             -n <not_state>                              - filter out by state, default: abandoned projects
             -a "name=value name=value ..."              - filter by attributes
+            -w "worker_id" - projects contacted by worker
     """
 
     def __call__(self, command, client, opts, args):
         state = opts.get("-s", "active")
         not_state = opts.get("-n")
+        worker_id = opts.get("-w")
 
         # default to not list abandoned projects unless specifically asked
         if state == "abandoned" or state == "all" and not_state is None:
@@ -397,7 +399,7 @@ class ListCommand(CLICommand):
             for s in states:
                 lst = lst + client.list_projects(state=s, not_state=not_state, attributes=attributes, owner=owner, with_files=True, with_replicas=False)
         else:
-            lst = client.list_projects(state=state, not_state=not_state, attributes=attributes, owner=owner, with_files=True, with_replicas=False)
+            lst = client.list_projects(state=state, not_state=not_state, attributes=attributes, owner=owner, worker_id=worker_id, with_files=True, with_replicas=False)
 
         if "-j" in opts:
             print(pretty_json(list(lst)))
