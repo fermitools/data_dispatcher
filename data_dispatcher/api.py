@@ -332,7 +332,7 @@ class DataDispatcherClient(HTTPClient, TokenAuthClientMixin):
         else:
             return None
     
-    def list_projects(self, owner=None, state="active", not_state="abandoned", attributes=None, with_files=True, with_replicas=False):
+    def list_projects(self, owner=None, state="active", not_state="abandoned", attributes=None, worker_id=None, with_files=True, with_replicas=False):
         """Lists existing projects
         
         Keyword Arguments:
@@ -351,6 +351,7 @@ class DataDispatcherClient(HTTPClient, TokenAuthClientMixin):
         args = []
         if owner: args.append(f"owner={owner}")
         if state: args.append(f"state={state}")
+        if worker_id: args.append(f"worker_id={worker_id}")
         if not_state: args.append(f"not_state={not_state}")
         args.append("with_handles=" + ("yes" if with_files else "no"))
         args.append("with_replicas=" + ("yes" if with_replicas else "no"))
