@@ -374,7 +374,7 @@ class Handler(BaseHandler):
         project_log = (x.as_jsonable() for x in project.handles_log())
         return json.dumps(project_log), "text/json"
 
-    def projects(self, request, relpath, state=None, not_state=None, owner=None, attributes="", worker_id=""
+    def projects(self, request, relpath, state=None, not_state=None, owner=None, attributes="", worker_id="",
                 with_handles="yes", with_replicas="yes", **args):
         # default to only show projects owned by the current user
         user, error = self.authenticated_user()

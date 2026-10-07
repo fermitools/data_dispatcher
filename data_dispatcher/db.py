@@ -500,7 +500,7 @@ class DBProject(DBObject, HasLogRecord):
         return (DBProject.from_tuple(db, tup) for tup in cursor_iterator(c))
 
     @staticmethod
-    def list(db, owner=None, state=None, not_state=None, attributes=None, with_handle_counts=False, worker_id = None):
+    def list(db, owner=None, state=None, not_state=None, attributes=None, worker_id=None, with_handle_counts=False):
         wheres = [
             "(%(owner)s is null or p.owner=%(owner)s)",
             "(%(state)s is null or p.state=%(state)s)",
@@ -509,14 +509,14 @@ class DBProject(DBObject, HasLogRecord):
         if attributes is not None:
             for name, value in attributes.items():
                 wheres.append("p.attributes @> '{\"%s\": %s}'::jsonb" % (name, json_literal(value)))
-        if worker_id is not None:
-            wheres.append("hs.worker_id = '%s'" % worker_id
+        if worker_id: 
+            wheres.append("hs.worker_id = '%s'" % worker_id)
         p_wheres = " and ".join(wheres)
         c = db.cursor()
         table = DBProject.Table
         columns = DBProject.columns("p", as_text=True)
+        h_table = DBFileHandle.Table
         if with_handle_counts:
-            h_table = DBFileHandle.Table
             rse_table = DBRSE.Table
             rep_table = DBReplica.Table
 
@@ -525,7 +525,7 @@ class DBProject(DBObject, HasLogRecord):
             #
             
             available_by_project = {}
-            c.execute(f"""
+            query = f"""
                 with 
                     found_files as  
                     (
@@ -540,7 +540,7 @@ class DBProject(DBObject, HasLogRecord):
                     ),
                     handle_states as
                     (
-                        select h.project_id, h.namespace, h.name, 
+                        select h.project_id, h.namespace, h.name, h.worker_id,
                                 case
                                     when h.state = 'initial' then (
                                         case
@@ -563,11 +563,12 @@ class DBProject(DBObject, HasLogRecord):
                         and {p_wheres}
                     group by p.id, hs.state
                     order by p.id, hs.state
-            """, {"state":state, "not_state":not_state, "owner":owner})
+            """ 
+
+            c.execute(query, {"state":state, "not_state":not_state, "owner":owner})
 
             p = None
             for tup in cursor_iterator(c):
-                #print(tup)
                 p_tuple, h_state, count = tup[:len(DBProject.Columns)], tup[-2], tup[-1]
                 p1 = DBProject.from_tuple(db, p_tuple)
                 if p is None or p.ID != p1.ID:
@@ -575,16 +576,17 @@ class DBProject(DBObject, HasLogRecord):
                         yield p
                     p = p1
                     p.HandleCounts = {}
-                #print(p.ID, h_state, count)
                 p.HandleCounts[h_state] = count
             if p is not None:
                 yield p
         else:
-            c.execute(f"""
-                select {columns}
-                    from {table} p
-                    where {p_wheres}
-            """, {"state":state, "not_state":not_state, "owner":owner})
+            query = f"""
+                select distinct {columns}
+                    from {table} p, {h_table} hs
+		    where p.id = hs.project_id
+                      and {p_wheres}
+            """ 
+            c.execute(query, {"state":state, "not_state":not_state, "owner":owner})
             for tup in cursor_iterator(c):
                 yield DBProject.from_tuple(db, tup)
 
