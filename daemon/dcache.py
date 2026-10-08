@@ -18,8 +18,8 @@ class DCachePoller(PyThread, Logged):
         self.Files = {}                 # { did -> path }
         self.Stop = False
         ssl_config = ssl_config or {}
-        self.Cert = ssl_config.get("cert")
-        self.Key = ssl_config.get("key")
+        self.Cert = ssl_config.get("cert", None)
+        self.Key = ssl_config.get("key", None)
         #self.CA_Bundle = ssl_config.get("ca_bundle")
         
     @synchronized
@@ -87,8 +87,8 @@ class PinRequest(Logged):
         self.SSLConfig = ssl_config
         self.URL = None
         self.PinPrefix = pin_prefix
-        self.Cert = self.SSLConfig.get("cert")
-        self.Key = self.SSLConfig.get("key")
+        self.Cert = self.SSLConfig.get("cert", None)
+        self.Key = self.SSLConfig.get("key", None)
         self.CertTuple = (self.Cert, self.Key) if self.Cert else None
         self.Complete = False
         self.Expiration = None
@@ -200,7 +200,7 @@ class PinRequest(Logged):
     def delete(self):
         assert self.URL is not None
         headers = { "accept" : "application/json" }
-        if cert == None and scitoken():
+        if self.CertTuple == None and scitoken():
             headers["Authorization"] = f"Bearer {scitoken()}" 
         r = requests.delete(self.URL, headers=headers, verify=False, cert = self.CertTuple)
         #self.debug("status(): response:", r)
