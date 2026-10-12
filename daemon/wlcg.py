@@ -3,6 +3,7 @@ from data_dispatcher.db import DBReplica
 from pythreader import Primitive, Scheduler, synchronized, PyThread
 from data_dispatcher.logs import Logged
 from dcache import DCachePoller
+from data_dispatcher.scitoken import scitoken
 
 print("wlcg module importing...")
 
@@ -21,8 +22,8 @@ class WLCGPinRequest(Logged):
         self.SSLConfig = ssl_config
         self.URL = None
         self.RequestID = None
-        self.Cert = self.SSLConfig.get("cert")
-        self.Key = self.SSLConfig.get("key")
+        self.Cert = self.SSLConfig.get("cert", None)
+        self.Key = self.SSLConfig.get("key", None)
         self.CertTuple = (self.Cert, self.Key) if self.Cert else None
         self.Complete = False
         self.Expiration = None
@@ -52,6 +53,8 @@ class WLCGPinRequest(Logged):
         url = self.EndpointURL + ("/" if not self.EndpointURL.endswith("/") else "") + "stage"
             
         self.debug("WLCG pin request: URL:", url, "  request data:\n", json.dumps(data, indent="  "))
+        if self.CertTuple == None and scitoken():
+            headers["Authorization"] = f"Bearer {scitoken()}" 
         r = requests.post(url, data = json.dumps(data), headers=headers, verify=False, cert = self.CertTuple)
         self.debug("response:", r)
         self.debug("response headers:")
@@ -77,6 +80,8 @@ class WLCGPinRequest(Logged):
     def query(self):
         assert self.URL is not None
         headers = { "accept" : "application/json" }
+        if self.CertTuple == None and scitoken():
+            headers["Authorization"] = f"Bearer {scitoken()}" 
         r = requests.get(self.URL, headers=headers, verify=False, cert = self.CertTuple)
         #self.debug("status(): response:", r)
         if r.status_code // 100 != 2:
@@ -100,6 +105,8 @@ class WLCGPinRequest(Logged):
     def delete(self):
         assert self.URL is not None
         headers = { "accept" : "application/json" }
+        if self.CertTuple == None and scitoken():
+            headers["Authorization"] = f"Bearer {scitoken()}" 
         r = requests.delete(self.URL, headers=headers, verify=False, cert = self.CertTuple)
         #self.debug("status(): response:", r)
         if r.status_code // 100 != 2:
