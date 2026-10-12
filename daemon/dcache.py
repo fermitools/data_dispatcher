@@ -165,7 +165,7 @@ class PinRequest(Logged):
     def query(self):
         assert self.URL is not None
         headers = { "accept" : "application/json" }
-        if cert == None and scitoken():
+        if self.CertTuple == None and scitoken():
             headers["Authorization"] = f"Bearer {scitoken()}" 
         r = requests.get(self.URL, headers=headers, verify=False, cert = self.CertTuple)
         #self.debug("status(): response:", r)
