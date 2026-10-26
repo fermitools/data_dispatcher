@@ -1,0 +1,15 @@
+# Data Dispatcher web servers (data_server.py, gui_server.py) and daemon dependencies
+metacat                 # with the FastAPI based metacat.auth.server (fermitools/metacat#155)
+fastapi
+fastapi-utils
+typing-inspect          # needed by fastapi_utils.cbv with pydantic 2
+python-multipart        # HTML form parsing for the GUI
+a2wsgi                  # WSGI wrapper for mod_wsgi/uWSGI deployments
+uvicorn                 # standalone ASGI server, also used by the daemon
+jinja2
+pyyaml
+psycopg2
+wsdbtools
+pythreader
+requests
+lark

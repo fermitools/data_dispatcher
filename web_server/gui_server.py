@@ -1,14 +1,24 @@
-from webpie import WPApp, WPHandler, WPStaticHandler, sanitize
+from fastapi import FastAPI, APIRouter
+from fastapi.responses import Response, HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi_utils.cbv import cbv
+from a2wsgi import ASGIMiddleware
+from typing import Optional
 from data_dispatcher.db import DBProject, DBFileHandle, DBRSE, DBProximityMap       # , DBUser
 from data_dispatcher import Version
-from metacat.auth.server import AuthHandler, BaseHandler, BaseApp, GUIAuthHandler
-import urllib, os, yaml, time, json, pprint
+from metacat.auth.server import BaseHandler, BaseApp, auth_router, gui_auth_router, install_exception_handlers, \
+    sanitize
+import urllib, os, yaml, time, json, pprint, logging
 from urllib.parse import quote, unquote, unquote_plus
 from wsdbtools import ConnectionPool
 from datetime import timezone, datetime
 from data_dispatcher.query import ProjectQuery
 import os
 
+logger = logging.getLogger("data_dispatcher.gui_server")
+
+def json_response(text, media_type="text/json"):
+    return Response(text, media_type=media_type)
 
 def page_index(page, npages, page_size, url_prefix):
     last_page = npages - 1
@@ -42,6 +52,9 @@ def page_index(page, npages, page_size, url_prefix):
     #print(f"page_index({page}, {npages}) -> ", index_page_links)
     return index_page_links
 
+projects_router = APIRouter()
+
+@cbv(projects_router)
 class ProjectsHandler(BaseHandler):
     
     HandleStateOrder = {
@@ -69,20 +82,21 @@ class ProjectsHandler(BaseHandler):
         dt = dt.replace(tzinfo=timezone.utc)
         return dt
 
+    @projects_router.api_route("/P/projects", methods=["GET", "POST"])
     @sanitize()
-    def projects(self, request, relpath, message="", page=0, page_size=1000, **args):
+    def projects(self, message: str = "", page: str = "0", page_size: str = "1000"):
         db = self.App.db()
         page = int(page)
         page_size = int(page_size)
         istart = page*page_size
-        form_dict = request.POST
+        form_dict = self.form
         user, _ = self.authenticated_user()
         
         search_user = None
         search_active_only = True
         search_created_after = search_created_before = None
         
-        form_posted = request.method == "POST"
+        form_posted = self.request.method == "POST"
         if form_posted:
             search_user = form_dict.get("search_user", "").strip() or None
             search_active_only = form_dict.get("search_active_only", "off") == "on"
@@ -91,7 +105,7 @@ class ProjectsHandler(BaseHandler):
         
         state = "active" if search_active_only else None
 
-        do_search = request.POST.get("action") == "Search"
+        do_search = form_dict.get("action") == "Search"
         query_text = ""
         if do_search:
             query_text = form_dict.get("query")
@@ -116,7 +130,7 @@ class ProjectsHandler(BaseHandler):
         projects = sorted(projects, key=lambda p: p.ID)
             
         nprojects = len(projects)
-        print("projects found:", nprojects)
+        logger.debug("projects found: %s", nprojects)
         npages = (nprojects + page_size - 1)//page_size
         projects = projects[istart:istart + page_size]
         for project in projects:
@@ -143,44 +157,47 @@ class ProjectsHandler(BaseHandler):
             index_page_links[page] = None
             index_page_links = sorted(index_page_links.items())
 
-        print("page_index:", index_page_links)
+        logger.debug("page_index: %s", index_page_links)
 
         return self.render_to_response("projects.html", projects=projects, handle_states = DBFileHandle.States, message=message,
             page = page, page_index = index_page_links
         )
 
+    @projects_router.api_route("/P/handle_logs", methods=["GET", "POST"])
     @sanitize()
-    def handle_logs(self, request, relpath, project_id=None):
+    def handle_logs(self, project_id: Optional[str] = None):
         db = self.App.db()
         project_id = int(project_id)
         project = DBProject.get(db, project_id)
         if project is None:
-            return 404, "Project not found"
+            return HTMLResponse("Project not found", status_code=404)
         log_records = sorted([entry for entry in project.handles_log() if entry.Type == "state"], key = lambda e:e.T)
-        return json.dumps([e.as_jsonable() for e in log_records]), "text/json"
+        return json_response(json.dumps([e.as_jsonable() for e in log_records]))
 
+    @projects_router.api_route("/P/handle_state_counts", methods=["GET", "POST"])
     @sanitize()
-    def handle_state_counts(self, request, relpath, project_id=None):
+    def handle_state_counts(self, project_id: Optional[str] = None):
         db = self.App.db()
         project_id = int(project_id)
         project = DBProject.get(db, project_id)
         if project is None:
-            return 404, "Project not found"
+            return HTMLResponse("Project not found", status_code=404)
         counts = {state:0 for state in DBFileHandle.States}
         for did, state in project.handle_states().items():
             counts[state] = counts.get(state, 0) + 1
-        return json.dumps(counts), "text/json"
+        return json_response(json.dumps(counts))
 
+    @projects_router.api_route("/P/handle_counts_history", methods=["GET", "POST"])
     @sanitize()
-    def handle_counts_history(self, request, relpath, project_id=None):
+    def handle_counts_history(self, project_id: Optional[str] = None):
         db = self.App.db()
         project_id = int(project_id)
         project = DBProject.get(db, project_id)
         if project is None:
-            return 404, "Project not found"
+            return HTMLResponse("Project not found", status_code=404)
         log_records = sorted([entry for entry in project.handles_log() if entry.Type == "state"], key = lambda e:e.T)
         if not log_records:
-            return "[]", "text/json"
+            return json_response("[]")
         tmin = log_records[0].T.timestamp()
         tmax = log_records[1].T.timestamp()
         interval = tmax - tmin
@@ -219,10 +236,11 @@ class ProjectsHandler(BaseHandler):
             data["t"] = last_t
             data["t_display"] = entry.T.astimezone(timezone.utc).strftime("%Y-%m-%d %H:%M:%S") if entry is not None else ""
             history.append(data)
-        return json.dumps(history), "text/json"
+        return json_response(json.dumps(history))
 
+    @projects_router.api_route("/P/project", methods=["GET", "POST"])
     @sanitize()
-    def project(self, request, relpath, project_id=None, page=0, page_size=1000, **args):
+    def project(self, project_id: Optional[str] = None, page: str = "0", page_size: str = "1000"):
         page = int(page)
         page_size = int(page_size)
 
@@ -292,8 +310,9 @@ class ProjectsHandler(BaseHandler):
             state_index = state_page_links
         )
 
+    @projects_router.api_route("/P/project_handles_log", methods=["GET", "POST"])
     @sanitize()
-    def project_handles_log(self, request, relpath, project_id=None, page=0, page_size=1000, **args):
+    def project_handles_log(self, project_id: Optional[str] = None, page: str = "0", page_size: str = "1000"):
         page = int(page)
         page_size = int(page_size)
 
@@ -327,8 +346,9 @@ class ProjectsHandler(BaseHandler):
             page = page, page_index = page_index(page, npages, page_size,f"project_handles_log?project_id={project_id}")
         )
 
+    @projects_router.api_route("/P/handle", methods=["GET", "POST"])
     @sanitize()
-    def handle(self, request, relpath, project_id=None, namespace=None, name=None, **args):
+    def handle(self, project_id: Optional[str] = None, namespace: Optional[str] = None, name: Optional[str] = None):
         db = self.App.db()
         handle = DBFileHandle.get(db, int(project_id), namespace, name)
         if handle is None:
@@ -356,8 +376,9 @@ class ProjectsHandler(BaseHandler):
         else:
             return float(delta)
         
+    @projects_router.api_route("/P/handle_event_counts", methods=["GET", "POST"])
     @sanitize()
-    def handle_event_counts(self, request, relpath, t0=None, window=None, bin=None, **_):
+    def handle_event_counts(self, t0: Optional[str] = None, window: Optional[str] = None, bin: Optional[str] = None):
         db = self.App.db()
         if t0 is None:
             t0 = time.time() - self.cvt_time_delta(window)
@@ -366,21 +387,26 @@ class ProjectsHandler(BaseHandler):
         bin = self.cvt_time_delta(bin)
         t0 = int(t0/bin)*bin
         t0, t1, events, counts = DBFileHandle.event_counts(db, t0, bin)
-        return json.dumps({
+        return json_response(json.dumps({
             "t0": t0,
             "t1": t1,
             "events": events,
             "counts": counts,
             "bin": bin
-        }), "application/json"
+        }), media_type="application/json")
         
-    def stats(self, request, relpath, **_):
+    @projects_router.api_route("/P/stats", methods=["GET", "POST"])
+    def stats(self):
         return self.render_to_response("stats.html")
 
+rse_router = APIRouter()
+
+@cbv(rse_router)
 class RSEHandler(BaseHandler):
     
+    @rse_router.api_route("/R/proximity_map", methods=["GET", "POST"])
     @sanitize()
-    def proximity_map(self, request, relpath, message="", **args):
+    def proximity_map(self, message: str = ""):
         enabled_rses = set(r.Name for r in DBRSE.list(self.App.db(), include_disabled=False))
         pmap = self.App.proximity_map(rses=enabled_rses)
         overrides = pmap.Overrides
@@ -393,18 +419,25 @@ class RSEHandler(BaseHandler):
             overrides = overrides, overrides_cpus=overrides_cpus, overrides_rses=overrides_rses
         )
 
+    @rse_router.api_route("/R/rses", methods=["GET", "POST"])
+    @rse_router.api_route("/R/index", methods=["GET", "POST"])
     @sanitize()
-    def rses(self, request, relpath, **args):
+    def rses(self):
         user, auth_error = self.authenticated_user()
         is_admin = user is not None and user.is_admin()
         rses = list(DBRSE.list(self.App.db(), include_disabled=True))
         rses = sorted(rses, key=lambda r: (0 if r.Enabled else 1, r.Name))
         return self.render_to_response("rses.html", rses=rses, is_admin=is_admin)
+
+    @rse_router.api_route("/R", methods=["GET", "POST"])
+    @rse_router.api_route("/R/", methods=["GET", "POST"])
+    def default(self):
+        self.redirect(self.appRootPath() + "/R/index")
     
-    index = rses
-    
+    @rse_router.api_route("/R/rse", methods=["GET", "POST"])
+    @rse_router.api_route("/R/rse/{relpath:path}", methods=["GET", "POST"])
     @sanitize()
-    def rse(self, request, relpath, name=None, **args):
+    def rse(self, relpath: str = "", name: Optional[str] = None):
         name = name or relpath
         rse = DBRSE.get(self.App.db(), name)
         if rse is None:
@@ -414,8 +447,9 @@ class RSEHandler(BaseHandler):
         mode = "edit" if is_admin else "view"
         return self.render_to_response("rse.html", rse=rse, mode=mode)
 
+    @rse_router.api_route("/R/create", methods=["GET", "POST"])
     @sanitize()
-    def create(self, request, relpath, **args):
+    def create(self):
         user, auth_error = self.authenticated_user()
         is_admin = user is not None and user.is_admin()
         if not is_admin:
@@ -432,59 +466,58 @@ class RSEHandler(BaseHandler):
                 proximity = int(proximity.strip())
                 pmap.append([site, proximity])
 
+    @rse_router.api_route("/R/do_create", methods=["GET", "POST"])
     @sanitize()
-    def do_create(self, request, relpath, **args):
+    def do_create(self):
         user, auth_error = self.authenticated_user()
         is_admin = user is not None and user.is_admin()
         if not is_admin:
             self.redirect("./rses")
         
-        name = request.POST["name"]
+        name = self.form["name"]
         rse = DBRSE.create(self.App.db(), name)
-        self._do_update(rse, request)
+        self._do_update(rse, self.form)
         self.redirect(f"./rses")
         
+    @rse_router.api_route("/R/do_update", methods=["GET", "POST"])
     @sanitize()
-    def do_update(self, request, relpath, **args):
+    def do_update(self):
         user, auth_error = self.authenticated_user()
         is_admin = user is not None and user.is_admin()
         if not is_admin:
             self.redirect("./rses")
         
-        name = request.POST["name"]
+        name = self.form["name"]
         rse = DBRSE.get(self.App.db(), name)
         if rse is None:
             self.redirect("./rses")
-        self._do_update(rse, request)
+        self._do_update(rse, self.form)
         self.redirect(f"./rses")
         
-    def _do_update(self, rse, request):
-        rse.Type = request.POST.get("type", "")
-        rse.Tape = request.POST.get("is_tape", "no") != "no"
-        rse.Available = request.POST.get("is_available", "no") != "no"
-        rse.RemovePrefix = request.POST.get("remove_pefix", "")
-        rse.AddPrefix = request.POST.get("add_pefix", "")
-        rse.PollURL = request.POST.get("poll_url") or None
-        rse.PinURL = request.POST.get("pin_url") or None
-        rse.PinPrefix = request.POST.get("pin_prefix") or None
-        rse.Description = request.POST.get("description", "")
-        rse.Preference = int(request.POST.get("preference", 0))
-        rse.Enabled = request.POST.get("is_enabled", "no") != "no"
+    def _do_update(self, rse, form):
+        rse.Type = form.get("type", "")
+        rse.Tape = form.get("is_tape", "no") != "no"
+        rse.Available = form.get("is_available", "no") != "no"
+        rse.RemovePrefix = form.get("remove_pefix", "")
+        rse.AddPrefix = form.get("add_pefix", "")
+        rse.PollURL = form.get("poll_url") or None
+        rse.PinURL = form.get("pin_url") or None
+        rse.PinPrefix = form.get("pin_prefix") or None
+        rse.Description = form.get("description", "")
+        rse.Preference = int(form.get("preference", 0))
+        rse.Enabled = form.get("is_enabled", "no") != "no"
         rse.save()
 
 
+top_router = APIRouter()
+
+@cbv(top_router)
 class TopHandler(BaseHandler):
-    
-    def __init__(self, request, app):
-        BaseHandler.__init__(self, request, app)
-        #self.U = UsersHandler(request, app)
-        self.P = ProjectsHandler(request, app)
-        self.A = GUIAuthHandler(request, app)
-        self.R = RSEHandler(request, app)
-        self.static = WPStaticHandler(request, app)
-        
-    def index(self, request, relpath, **args):
-        self.redirect("P/projects")
+
+    @top_router.api_route("/", methods=["GET", "POST"])
+    @top_router.api_route("/index", methods=["GET", "POST"])
+    def index(self):
+        self.redirect(self.appRootPath() + "/P/projects")
 
 
 def pretty_time_delta(t):
@@ -552,7 +585,7 @@ def none_as_blank(x):
 class App(BaseApp):
     
     def __init__(self, config, prefix):
-        BaseApp.__init__(self, config, TopHandler, prefix=prefix)
+        BaseApp.__init__(self, config, prefix=prefix)
         self.Config = config
         proximity_cfg = config.get("proximity_map", {})
         self.DefaultProximity = proximity_cfg.get("default_proximity", -1)
@@ -567,7 +600,7 @@ class App(BaseApp):
 
     def init(self):
         #print("App.init... prefix:", self.Prefix)
-        templdir = self.ScriptHome
+        templdir = ScriptHome
         self.initJinjaEnvironment(
             tempdirs=[templdir, "."],
             globals={
@@ -583,27 +616,47 @@ class App(BaseApp):
             }
         )
 
+# templates and static files are next to this module
+ScriptHome = os.path.dirname(os.path.abspath(__file__))
+
 def create_application(config=None):
+    if config is None:
+        config = os.environ.get("DATA_DISPATCHER_CFG")
+        if not config:
+            return None
     if isinstance(config, str):
         config = yaml.load(open(config, "r"), Loader=yaml.SafeLoader)
-    else:
-        cfg = os.environ.get("DATA_DISPATCHER_CFG")
-        config = yaml.load(open(cfg, "r"), Loader=yaml.SafeLoader)
-    prefix = config.get("gui_prefix", "")
-    return App(config, prefix)
-    
-application = create_application()
-        
+    prefix = (config.get("gui_prefix") or "").rstrip("/")
+    app = App(config, prefix)
+    app.init()
+
+    fastapi_app = FastAPI(title="Data Dispatcher GUI", version=Version, docs_url=None, redoc_url=None, openapi_url=None)
+    fastapi_app.state.metacat_app = app         # used by metacat.auth.server.BaseHandler
+    install_exception_handlers(fastapi_app)
+    fastapi_app.include_router(top_router, prefix=prefix)
+    fastapi_app.include_router(projects_router, prefix=prefix)
+    fastapi_app.include_router(rse_router, prefix=prefix)
+    # metacat auth routers use paths relative to where they are included
+    fastapi_app.include_router(gui_auth_router, prefix=prefix + "/A")
+    fastapi_app.include_router(auth_router, prefix=prefix + "/A")
+    fastapi_app.mount(prefix + "/static", StaticFiles(directory=ScriptHome + "/static"), name="static")
+    return fastapi_app
+
+# FastAPI (ASGI) application, e.g. for uvicorn
+app = create_application()
+
+# WSGI application, e.g. for mod_wsgi or uWSGI
+application = ASGIMiddleware(app) if app is not None else None
+
 if __name__ == "__main__":
     import getopt, sys
-    
+    import uvicorn
+
     opts, args = getopt.getopt(sys.argv[1:], "c:l")
     opts = dict(opts)
     config = yaml.load(open(opts["-c"], "r"), Loader=yaml.SafeLoader)
     server_config = config.get("web_server", {})
     port = server_config.get("gui_port", 8080)
     print("Starting on port:", port)
-    logging = "-l" in opts or server_config.get("gui_logging")
-    app = create_application(config)
-    app.run_server(port, logging=logging)
-    
+    access_log = "-l" in opts or bool(server_config.get("gui_logging"))
+    uvicorn.run(create_application(config), host="0.0.0.0", port=port, access_log=access_log)
