@@ -23,7 +23,26 @@
         {
             navigator.clipboard.writeText(text);
         };
-    </script>
+
+    function update_utc()
+    {
+        function pad_zero(x)
+        {
+            return x < 10 ? "0" + x : "" + x;
+        }
+        const t = new Date();
+        const year = t.getUTCFullYear() % 100;
+        const month = pad_zero(t.getUTCMonth() + 1);
+        const day = pad_zero(t.getUTCDate());
+        const hour = pad_zero(t.getUTCHours());
+        const minute = pad_zero(t.getUTCMinutes());
+        const second = pad_zero(t.getUTCSeconds());
+        const utc = "" + month + "/" + day + "/" + year + " "
+            + hour + ":" + minute + ":" + second;
+        document.getElementById("current_utc").innerHTML = utc;
+    }
+    setInterval(update_utc, 250);
+</script>
 
 </head>
 
@@ -89,7 +108,7 @@ function search_for(s) {
 
 <div id="body">
 
-    <div id="title">
+    <div id="header">
         <h1>{{GLOBAL_SiteTitle}}</h1>
     </div>
 
@@ -102,32 +121,11 @@ function search_for(s) {
         {% endif %}
     	<h2>{% block headline %}{% endblock %}</h2>
     </div>
-    {% block content %}{% endblock %}</div>
-</div>	<!-- body -->
-
-<div id="version">Version: {{GLOBAL_Version}}</div>
-
-<script>
-    function update_utc()
-    {
-        function pad_zero(x)
-        {
-            return x < 10 ? "0" + x : "" + x;
-        }
-        const t = new Date();
-        const year = t.getUTCFullYear() % 100;
-        const month = pad_zero(t.getUTCMonth() + 1);
-        const day = pad_zero(t.getUTCDate());
-        const hour = pad_zero(t.getUTCHours());
-        const minute = pad_zero(t.getUTCMinutes());
-        const second = pad_zero(t.getUTCSeconds());
-        const utc = "" + month + "/" + day + "/" + year + " "
-            + hour + ":" + minute + ":" + second;
-        document.getElementById("current_utc").innerHTML = utc;
-    }
-    setInterval(update_utc, 250);
-</script>
-
+    <div id="content">
+        {% block content %}{% endblock %}</div>
+    </div>
+</div>	
+<span id="version">Version: {{GLOBAL_Version}}</span>
 </body>
 
 </html>
