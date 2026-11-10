@@ -40,7 +40,7 @@
     <tr>
         <th>Description</th>
         <td>{% if mode == "create" or mode == "edit" %}
-                <input name="description" type="text" size="120" {% if mode=="edit" %}value="{{rse.Description}}"{% endif %}/>
+                <input name="description" type="text"  {% if mode=="edit" %}value="{{rse.Description}}"{% endif %}/>
             {% else %}
                 {{rse.Description}}
             {% endif %}

@@ -40,26 +40,20 @@
     GLOBAL_User:  "{{GLOBAL_User}}"
 -->
 
-<div id="title">
-    <h1>{{GLOBAL_SiteTitle}}</h1>
-</div>
 
 <div id="banner">
-    <span id="btn_projects"><a class=button href="{{GLOBAL_AppRootPath}}/P/projects">Projects</a></span>
-    <span id="btn_rses"><a class=button href="{{GLOBAL_AppRootPath}}/R/index">RSEs</a></span>
-    <span id="btn_proximity"><a class=button href="{{GLOBAL_AppRootPath}}/R/proximity_map">CPU/RSE proximity map</a></span>
-    <span id="btn_stats"><a class=button href="{{GLOBAL_AppRootPath}}/P/stats">Statistics</a></span>
-    <span class=note>All times in UTC:&nbsp;<span id="current_utc"></span>></span>
-    <span id="btn_docs" style="width:100%" align=right>
-            <a href="https://fermitools.github.io/data_dispatcher/" target="_new">docs</a>
+    <h3>
+	Data Dispatcher
+    </h3>
+    <h5>Pages</h5>
+    <span id="btn_projects"><a href="{{GLOBAL_AppRootPath}}/P/projects">Projects</a></span>
+    <span id="btn_rses"><a href="{{GLOBAL_AppRootPath}}/R/index">RSEs</a></span>
+    <span id="btn_proximity"><a href="{{GLOBAL_AppRootPath}}/R/proximity_map">CPU/RSE proximity map</a></span>
+    <span id="btn_statistics">
+        <a href="{{GLOBAL_AppRootPath}}/P/stats">Statistics</a>
+        <span class="note">All times in UTC</span>
     </span>
-    <span id="btn_user">
-                {% if G_User %}
-                    <span class="note">logged in as {{G_User.Name or ""}}&nbsp;{{G_User.Username}}&nbsp;</span><a class=button  href="{{GLOBAL_AppRootPath}}/A/logout?redirect={{GLOBAL_AppRootPath}}/index">log out</a>
-                {% else %}
-                    <a class=button href="{{GLOBAL_AppRootPath}}/A/login?redirect={{GLOBAL_AppRootPath}}/index">log in</a>
-                {% endif %}
-       </span>
+    <span id="btn_docs"><a href="https://fermitools.github.io/data_dispatcher/" target="_new">Documentation</a></span>
 </div>
    
 <script type="text/javascript">
@@ -94,6 +88,10 @@ function search_for(s) {
 </select>
 
 <div id="body">
+
+    <div id="title">
+        <h1>{{GLOBAL_SiteTitle}}</h1>
+    </div>
 
     <div id="headline">
         {% if message is defined and message %}
