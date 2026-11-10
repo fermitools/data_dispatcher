@@ -1,284 +1,7 @@
 <html>
 
 <head>
-
-    <style type="text/css">
-
-    	div#banner {
-    		padding: 30px 10px;
-    	}
-	
-    	div#body {
-                margin-right: 30px;
-                margin-left: 30px;
-                margin-top: 20px;
-                padding: 10px 10px;
-    	}
-        
-        div#content {
-            margin-right: 30px;
-            margin-left: 30px;
-            margin-top: 20px;
-	    width: 100%;
-        }
-		
-        
-        body, td, th, p, div {
-            font: 12px verdana, arial;
-        }
-
-        td, th {
-            vertical-align: top;
-            padding: 3px 6px;
-        }
-
-        th {
-          color: #638292;
-          font-weight: bold;
-        }
-
-    	.form th {
-    		font-weight: bold;
-    		text-align:  right;
-    	}
-
-    	.form td {
-    		text-align:  left;
-    	}
-    	.form td, .form th {
-    		padding: 5px;
-    	}
-
-        table.data, table.file_metadata {
-            border-collapse: separate;
-            border-spacing: 6px 2px;
-        }
-        
-        .data th {
-          text-align: left;
-          vertical-align: bottom;
-          border-bottom: 1px solid #83A2A2;
-        }
-
-        .data th.combined {
-            border-bottom: 0;
-            text-align: center;
-        }
-
-        .data th.no__ {
-            border-bottom: 0;
-        }
-
-
-        .data td, .data th {
-            padding: 3px 5px;
-        }
-        
-        .data td{
-            text-align: right;
-        }
-
-
-        .placement th {
-            font-weight: bold;
-            text-align:  left;
-        }
-        
-        .link_menu td {
-            padding: 5px;
-        }
-        
-        .file_metadata td, .file_metadata th {
-            padding: 3px 5px;
-            b-order-top: 1px solid #CCC;
-            b-order-bottom: 1px solid #CCC;
-        }
-        
-        .tabular td, .tabular th {
-            padding: 5px;
-        }
-
-        .tabular th {
-            font-weight: bold;
-            text-align:  right;
-        }
-        
-        td.left {
-            text-align: left;
-        }
-        td.right {
-            text-align: right;
-        }
-
-        textarea {
-            font: 14px courier;
-            }
-            
-        i-nput {
-            font: 400 14px verdana;
-        }
-        
-    div#version {
-        color: gray;
-        font-size: 10px;
-        font-style: italic;
-        
-        position: fixed;
-        bottom: 3px;
-        right: 5px;
-    }
-    
-    div.headline {
-        border-top: 1px solid black;
-        border-bottom: 1px solid black;
-        font-weight: bold;
-        padding: 5px 15px;
-        font-size: 14pt;
-        margin-top: 15px;
-        margin-bottom: 15px;
-    }
-
-    #main_menu td, #main_menu th {
-	white-space: nowrap;
-	}
-
-    .code {
-        font: 12px monospace;
-        }
-        
-    pre.code {
-        b-ackground-color: #F8F8F8;
-        padding: 5px;
-        b-order: solid 1px #E0E0E0;
-        }
-        
-    p.message {
-        border: solid 1px #117711;
-        padding: 5px 15px;
-    }
-    
-    .error {
-        color: #A11;
-    }
-
-    p.error {
-        border-left: solid 5px #A11;
-        padding: 0px 5px;
-    }
-        
-    a.button {
-        text-decoration: none;
-    }
-
-    .file_metadata th {
-        text-align: left;
-        font-weight: bold;
-        color: #888;
-    }
-    
-    .filename {
-        font-family:  source_code, monospace;
-        font-size: 12px;
-    }
-    
-    .file_metadata td.attr_name, .file_metadata td.meta_whole {
-        padding-left:50px;
-    }
-    
-    .file_metadata td.attr_name, .file_metadata td.attr_value, pre.metadata {
-        font-family:  source_code, monospace;
-        font-size: 11px;
-    }
-    
-    .file_metadata td.fid, .file_metadata td.filename {
-        font-family:  source_code, monospace;
-        font-size: 12px;
-    }
-    
-    .file_metadata a:link, .file_metadata a:visited {
-            text-decoration: none;
-            color: #44A;
-        }
-
-    #meta_stats_toggle {
-        font: 16px monospace;
-    }
-
-    .query_text {
-        font-family:  source_code, monospace;
-        
-    }
-
-    .attributes td, .attributes th {
-        font-family: source_code, monospace;
-    }
-    
-    .dense td, .dense th    {
-        padding: 1px 5px;        
-    }
-
-    td.nopadding {
-        padding: 0;
-    }
-
-    .disabled td {
-        color: #AAA;
-    }
-
-    .failed {
-        background-color: #F44;
-    }
-
-    .done {
-        background-color: #4A4;
-    }
-
-    .cancelled {
-        background-color: #FCC;
-    }
-
-    .initial {
-        background-color: #EEE;
-    }
-
-    .reserved, .active {
-        background-color: #AAF;
-    }
-
-    .found {
-        background-color: #DED;        
-    }
-    
-    .not_found {
-        background-color: #AAA;        
-    }
-    
-    .available {
-        background-color: #8F8;             // #8F8        
-    }
-    
-    .unavailable {
-        background-color: #FF8;        
-    }
-    
-    a, a:visited {
-        color: #228;
-    }
-    
-    a.button, a.button:visited {
-        color: gray;
-        font-weight: bold;
-        padding: 3px 5px;  
-    }
-    
-    img.copy_button {
-        vertical-align:bottom;
-        height: 13;
-        width: 13;
-    }
-    
-    </style>
-    
+    <link rel="stylesheet" href="{{GLOBAL_AppTopPath}}/static/styles.css">
     
     {% block html_head %}{% endblock %}
 	
@@ -317,36 +40,62 @@
     GLOBAL_User:  "{{GLOBAL_User}}"
 -->
 
-<div id="title" style="padding:30px 30px">
+<div id="title">
     <h1>{{GLOBAL_SiteTitle}}</h1>
 </div>
 
-<div id="main_menu">
-	<table class="placement link_menu" width="100%">
-    	<tr>
-    	    <td><a class=button href="{{GLOBAL_AppRootPath}}/P/projects">Projects</a></td>
-    	    <td><a class=button href="{{GLOBAL_AppRootPath}}/R/index">RSEs</a></td>
-    	    <td><a class=button href="{{GLOBAL_AppRootPath}}/R/proximity_map">CPU/RSE proximity map</a></td>
-    	    <td><a class=button href="{{GLOBAL_AppRootPath}}/P/stats">Statistics</a></td>
-            <td><span style="color:#AAA; padding-right: 10px"><i>All times in UTC:&nbsp;<span id="current_utc"></span></i></span></td>
-            <td style="width:100%" align=right>
-                    <a href="https://fermitools.github.io/data_dispatcher/" target="_new">docs</a>
-                </td>
-    		<td>
-                        {% if G_User %}
-                            <span style="color:#AAA">logged in as {{G_User.Name or ""}}&nbsp;{{G_User.Username}}&nbsp;</span><a class=button  href="{{GLOBAL_AppRootPath}}/A/logout?redirect={{GLOBAL_AppRootPath}}/index">log out</a>
-                        {% else %}
-                            <a class=button href="{{GLOBAL_AppRootPath}}/A/login?redirect={{GLOBAL_AppRootPath}}/index">log in</a>
-                        {% endif %}
-    		</td>
-    	</tr>
-    </table>
+<div id="banner">
+    <span id="btn_projects"><a class=button href="{{GLOBAL_AppRootPath}}/P/projects">Projects</a></span>
+    <span id="btn_rses"><a class=button href="{{GLOBAL_AppRootPath}}/R/index">RSEs</a></span>
+    <span id="btn_proximity"><a class=button href="{{GLOBAL_AppRootPath}}/R/proximity_map">CPU/RSE proximity map</a></span>
+    <span id="btn_stats"><a class=button href="{{GLOBAL_AppRootPath}}/P/stats">Statistics</a></span>
+    <span class=note>All times in UTC:&nbsp;<span id="current_utc"></span>></span>
+    <span id="btn_docs" style="width:100%" align=right>
+            <a href="https://fermitools.github.io/data_dispatcher/" target="_new">docs</a>
+    </span>
+    <span id="btn_user">
+                {% if G_User %}
+                    <span class="note">logged in as {{G_User.Name or ""}}&nbsp;{{G_User.Username}}&nbsp;</span><a class=button  href="{{GLOBAL_AppRootPath}}/A/logout?redirect={{GLOBAL_AppRootPath}}/index">log out</a>
+                {% else %}
+                    <a class=button href="{{GLOBAL_AppRootPath}}/A/login?redirect={{GLOBAL_AppRootPath}}/index">log in</a>
+                {% endif %}
+       </span>
 </div>
-    
+   
+<script type="text/javascript">
+function search_for(s) {
+    let mybase = window.location.href;
+    let pos = mybase.search("/gui/")
+    mybase = mybase.substr(0, pos+5);
+
+    url = mybase + 'projects?searchuser={{G_User.Username}}&action=Search&query=' + encodeURIComponent(s)
+    document.location.href = url;
+}
+</script>
+
+<span id="searchbar">
+   <input id="searchbarinput" width=30% onchange="search_for(this.value)">
+</span>
+
+<select id="userinfo" onchange="window.location=this.value">
+{% if G_User %}
+    <option value=""> 
+	{{G_User.Username}}
+   </option>
+   <option value="{{GLOBAL_AppRootPath}}/A/logout?redirect={{GLOBAL_AppRootPath}}/index">
+	<span id="logout">Log out</span>
+   </option>
+{% else %}
+    <option value="">Not Logged In<option>
+    <option value="{{GLOBAL_AppRootPath}}/A/login?redirect={{GLOBAL_AppRootPath}}/gui/index" default>
+	<span id="log_in">Log in</span>
+   </option>
+{% endif %}
+</select>
 
 <div id="body">
 
-    <div id="headline" style="clear:both">
+    <div id="headline">
         {% if message is defined and message %}
             <p class=message>{{message}}</p>
         {% endif %}
@@ -355,7 +104,7 @@
         {% endif %}
     	<h2>{% block headline %}{% endblock %}</h2>
     </div>
-    <div id=content style="clear:both">{% block content %}{% endblock %}</div>
+    {% block content %}{% endblock %}</div>
 </div>	<!-- body -->
 
 <div id="version">Version: {{GLOBAL_Version}}</div>
