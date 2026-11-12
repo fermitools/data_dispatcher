@@ -94,7 +94,7 @@ body {
 
 #banner span { 
     display: block; 
-    padding: 1em; 
+    padding: 0.8em; 
 } 
 
 #banner span:hover { 
@@ -394,7 +394,7 @@ input.delete:before {
    padding: 0.5em 0em;
 }
 #banner span span { 
-   margin-top: -1ex;
+   margin-top: -0.5ex;
    margin-left: 2em;
    padding: 0ex;
 }
@@ -407,6 +407,9 @@ input.delete:before {
     color: var(--de-emph-color);
 }
 
+#banner h3:before {
+    content: "🧌  ";
+}
 
 #searchbar {
     padding: 0.5em;
