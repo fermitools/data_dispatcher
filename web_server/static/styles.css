@@ -392,6 +392,11 @@ input.delete:before {
     text-decoration: none;
     text-transform: capitalize;
 }
+
+#allbutton:visited, #createbutton:visited, #searchbutton:visited, .docbutton:visited {
+    color: var(--button-fg);
+}
+
 #banner span a { 
    text-decoration: none; 
    color: var(--menu-color);

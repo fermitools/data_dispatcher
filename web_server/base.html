@@ -62,17 +62,15 @@
 
 
 <div id="banner">
-    <h3>
-	Data Dispatcher
-    </h3>
+    <h3>{{GLOBAL_SiteTitle}}</h3>
     <h5>Pages</h5>
     <span id="btn_projects"><a href="{{GLOBAL_AppRootPath}}/P/projects">Projects</a></span>
-    <span id="btn_rses"><a href="{{GLOBAL_AppRootPath}}/R/index">RSEs</a></span>
     <span id="btn_proximity"><a href="{{GLOBAL_AppRootPath}}/R/proximity_map">Proximity Map</a></span>
     <span id="btn_statistics">
         <a href="{{GLOBAL_AppRootPath}}/P/stats">Statistics</a>
         <span class="note">All times in UTC</span>
     </span>
+    <span id="btn_rses"><a href="{{GLOBAL_AppRootPath}}/R/index">RSEs</a></span>
     <span id="btn_docs"><a href="https://fermitools.github.io/data_dispatcher/" target="_new">Documentation</a></span>
 </div>
    
@@ -110,10 +108,6 @@ function search_for(s) {
 </select>
 
 <div id="body">
-
-    <div id="header">
-        <h1>{{GLOBAL_SiteTitle}}</h1>
-    </div>
 
     <div id="headline">
         {% if message is defined and message %}
