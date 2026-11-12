@@ -8,7 +8,7 @@
 @property --leftcolumn {
     syntax: "<length> | <percentage>";
     inherits: true;
-    initial-value: 13em;
+    initial-value: 14em;
 }
 @property --menu-color {
     syntax: "<color>";
@@ -362,7 +362,7 @@ width: 13;
 
 #banner {
     display: block;
-    width: 13em;
+    width: 14em;
     position: absolute;
     height: 90%;
     top: 0;
@@ -422,14 +422,14 @@ input.delete:before {
 
 #searchbar {
     padding: 0.5em;
-    margin-left: 13em;
+    margin-left: 14em;
     margin-bottom: 0em;
 }
 #searchbar:before { content: "🔍 "; }
 
 #body {
     position: relative;
-    left: 13em;
+    left: 14em;
     top: 1.8ex;
     max-height: calc(100vh );
     max-width: calc(100vw - 20em);  
