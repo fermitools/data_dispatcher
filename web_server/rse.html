@@ -40,7 +40,7 @@
     <tr>
         <th>Description</th>
         <td>{% if mode == "create" or mode == "edit" %}
-                <input name="description" type="text" size="120" {% if mode=="edit" %}value="{{rse.Description}}"{% endif %}/>
+                <input name="description" type="text"  {% if mode=="edit" %}value="{{rse.Description}}"{% endif %}/>
             {% else %}
                 {{rse.Description}}
             {% endif %}
@@ -105,8 +105,8 @@
         <td>{% if mode == "create" or mode == "edit" %}
                 <select name="type">
                     <option value=""></option>
-                    <option value="native" {% if rse.Type == "native" %}selected="selected" {%endif%}>native</option>
-                    <option value="wlcg" {% if rse.Type == "wlcg" %}selected="selected" {% endif %}>WLCG</option>
+                    <option value="native" {% if rse and rse.Type == "native" %}selected="selected" {%endif%}>native</option>
+                    <option value="wlcg" {% if rse and rse.Type == "wlcg" %}selected="selected" {% endif %}>WLCG</option>
                 </select>
             {% else %}
                 {{rse.Type or ''}}
