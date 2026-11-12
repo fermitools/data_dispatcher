@@ -1,6 +1,7 @@
 <html>
 
 <head>
+    <meta charset="UTF-8">
     <link rel="stylesheet" href="{{GLOBAL_AppTopPath}}/static/styles.css">
     
     {% block html_head %}{% endblock %}
@@ -67,7 +68,7 @@
     <h5>Pages</h5>
     <span id="btn_projects"><a href="{{GLOBAL_AppRootPath}}/P/projects">Projects</a></span>
     <span id="btn_rses"><a href="{{GLOBAL_AppRootPath}}/R/index">RSEs</a></span>
-    <span id="btn_proximity"><a href="{{GLOBAL_AppRootPath}}/R/proximity_map">CPU/RSE proximity map</a></span>
+    <span id="btn_proximity"><a href="{{GLOBAL_AppRootPath}}/R/proximity_map">Proximity Map</a></span>
     <span id="btn_statistics">
         <a href="{{GLOBAL_AppRootPath}}/P/stats">Statistics</a>
         <span class="note">All times in UTC</span>
@@ -80,8 +81,10 @@ function search_for(s) {
     let mybase = window.location.href;
     let pos = mybase.search("/gui/")
     mybase = mybase.substr(0, pos+5);
+    if s[0] in '0123456789':
+        s = "id = "+ s
 
-    url = mybase + 'projects?searchuser={{G_User.Username}}&action=Search&query=' + encodeURIComponent(s)
+    url = mybase + 'P/projects?searchuser={{G_User.Username}}&action=Search&query=' + encodeURIComponent(s)
     document.location.href = url;
 }
 </script>
